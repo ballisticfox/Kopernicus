@@ -145,8 +145,10 @@
   </ItemGroup>
   <!--Source-->
   <ItemGroup>
+    <Compile Include="Components\MaterialWrapper\ScaledPlanetSimple2.cs" />
     <Compile Include="Components\ModularScatter\PQSMod_KopernicusLandClassScatterQuad.cs" />
     <Compile Include="Components\PQSLandControlFixer.cs" />
+    <Compile Include="Configuration\MaterialLoader\ScaledPlanetSimple2Loader.cs" />
     <Compile Include="ShadowMan\CelestialBodySortableByDistance.cs" />
     <Compile Include="ShadowMan\ShadowMan.cs" />
     <Compile Include="ShadowMan\Utilities\BufferManager.cs" />

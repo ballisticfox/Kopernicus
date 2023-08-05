@@ -86,6 +86,10 @@ namespace Kopernicus.Configuration
                 {
                     return ScaledMaterialType.Vacuum;
                 }
+                if (ScaledPlanetSimple2.UsesSameShader(material))
+                {
+                    return ScaledMaterialType.Vacuum2;
+                }
                 if (ScaledPlanetRimAerial.UsesSameShader(material))
                 {
                     return ScaledMaterialType.Atmospheric;
@@ -112,6 +116,7 @@ namespace Kopernicus.Configuration
                 Renderer renderer = Value.scaledBody.GetComponent<Renderer>();
 
                 Boolean isVaccum = ScaledPlanetSimple.UsesSameShader(renderer.sharedMaterial);
+                Boolean isVacuum2 = ScaledPlanetSimple2.UsesSameShader(renderer.sharedMaterial);
                 Boolean isAtmospheric = ScaledPlanetRimAerial.UsesSameShader(renderer.sharedMaterial);
                 Boolean isAtmosphericStandard = false;
                 if (!(Versioning.version_minor < 9))
@@ -125,6 +130,9 @@ namespace Kopernicus.Configuration
                     {
                         case ScaledMaterialType.Vacuum when !isVaccum:
                             renderer.sharedMaterial = new ScaledPlanetSimpleLoader();
+                            break;
+                        case ScaledMaterialType.Vacuum2 when !isVacuum2:
+                            renderer.sharedMaterial = new ScaledPlanetSimple2Loader();
                             break;
                         case ScaledMaterialType.Atmospheric when !isAtmospheric:
                             renderer.sharedMaterial = new ScaledPlanetRimAerialLoader();
@@ -145,6 +153,9 @@ namespace Kopernicus.Configuration
                     {
                         case ScaledMaterialType.Vacuum when !isVaccum:
                             renderer.sharedMaterial = new ScaledPlanetSimpleLoader();
+                            break;
+                        case ScaledMaterialType.Vacuum2 when !isVacuum2:
+                            renderer.sharedMaterial = new ScaledPlanetSimple2Loader();
                             break;
                         case ScaledMaterialType.Atmospheric when !isAtmospheric:
                             renderer.sharedMaterial = new ScaledPlanetRimAerialLoader();
@@ -276,6 +287,7 @@ namespace Kopernicus.Configuration
                 Renderer renderer = Value.scaledBody.GetComponent<Renderer>();
 
                 Boolean isVaccum = renderer.sharedMaterial is ScaledPlanetSimpleLoader;
+                Boolean isVacuum2 = renderer.sharedMaterial is ScaledPlanetSimple2Loader;
                 Boolean isAtmospheric = renderer.sharedMaterial is ScaledPlanetRimAerialLoader;
                 Boolean isAtmosphericStandard = false;
                 if (!(Versioning.version_minor < 9))
@@ -289,6 +301,9 @@ namespace Kopernicus.Configuration
                     {
                         case ScaledMaterialType.Vacuum when !isVaccum:
                             renderer.sharedMaterial = new ScaledPlanetSimpleLoader(renderer.sharedMaterial);
+                            goto default;
+                        case ScaledMaterialType.Vacuum2 when !isVacuum2:
+                            renderer.sharedMaterial = new ScaledPlanetSimple2Loader(renderer.sharedMaterial);
                             goto default;
                         case ScaledMaterialType.Atmospheric when !isAtmospheric:
                             renderer.sharedMaterial = new ScaledPlanetRimAerialLoader(renderer.sharedMaterial);
@@ -310,6 +325,9 @@ namespace Kopernicus.Configuration
                         case ScaledMaterialType.Vacuum when !isVaccum:
                             renderer.sharedMaterial = new ScaledPlanetSimpleLoader(renderer.sharedMaterial);
                             goto default;
+                        case ScaledMaterialType.Vacuum2 when !isVacuum2:
+                            renderer.sharedMaterial = new ScaledPlanetSimple2Loader(renderer.sharedMaterial);
+                            goto default;
                         case ScaledMaterialType.Atmospheric when !isAtmospheric:
                             renderer.sharedMaterial = new ScaledPlanetRimAerialLoader(renderer.sharedMaterial);
                             goto default;
@@ -326,6 +344,7 @@ namespace Kopernicus.Configuration
                 Renderer renderer = Value.scaledBody.GetComponent<Renderer>();
 
                 Boolean isVaccum = value is ScaledPlanetSimpleLoader;
+                Boolean isVacuum2 = value is ScaledPlanetSimple2Loader;
                 Boolean isAtmospheric = value is ScaledPlanetRimAerialLoader;
                 Boolean isAtmosphericStandard = false;
                 if (!(Versioning.version_minor < 9))
@@ -339,6 +358,9 @@ namespace Kopernicus.Configuration
                     {
                         case ScaledMaterialType.Vacuum when !isVaccum:
                             renderer.sharedMaterial = new ScaledPlanetSimpleLoader(value);
+                            break;
+                        case ScaledMaterialType.Vacuum2 when !isVacuum2:
+                            renderer.sharedMaterial = new ScaledPlanetSimple2Loader(value);
                             break;
                         case ScaledMaterialType.Atmospheric when !isAtmospheric:
                             renderer.sharedMaterial = new ScaledPlanetRimAerialLoader(value);
@@ -360,6 +382,9 @@ namespace Kopernicus.Configuration
                     {
                         case ScaledMaterialType.Vacuum when !isVaccum:
                             renderer.sharedMaterial = new ScaledPlanetSimpleLoader(value);
+                            break;
+                        case ScaledMaterialType.Vacuum2 when !isVacuum2:
+                            renderer.sharedMaterial = new ScaledPlanetSimple2Loader(value);
                             break;
                         case ScaledMaterialType.Atmospheric when !isAtmospheric:
                             renderer.sharedMaterial = new ScaledPlanetRimAerialLoader(value);
@@ -494,7 +519,7 @@ namespace Kopernicus.Configuration
             }
 
             // If we use OnDemand, we need to delete the original textures and reload them
-            if (Type != ScaledMaterialType.Star && OnDemandTextures != null)
+            if (Type != ScaledMaterialType.Star && Type != ScaledMaterialType.Vacuum2 && OnDemandTextures != null)
             {
                 if (OnDemandStorage.UseOnDemand)
                 {

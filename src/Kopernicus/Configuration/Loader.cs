@@ -208,7 +208,8 @@ namespace Kopernicus.Configuration
             SystemPrefab.mainToolbarSelected = 2; // initial value in stock systemPrefab. Unknown significance.
 
             // Load the ring shader
-            ShaderLoader.LoadAssetBundle("Kopernicus/Shaders", "kopernicusshaders");
+            ShaderLoader.LoadAssetBundle("Kopernicus/Shaders", "kopernicusshaders", true);
+            ShaderLoader.LoadAssetBundle("Kopernicus/Shaders", "scaledmesh2", false);
 
             // Event
             Events.OnLoaderApply.Fire(this, node);
