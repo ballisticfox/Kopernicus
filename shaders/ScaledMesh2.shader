@@ -11,15 +11,22 @@ Shader "Terrain/ScaledMesh2"
 		_MainTex_Yp("MainYp", 2D) = "white" {}
 		_MainTex_Zn("MainZn", 2D) = "white" {}
 		_MainTex_Zp("MainZp", 2D) = "white" {}
+
+
 		_BumpMap_Xn("BumpXn", 2D) = "bump" {}
 		_BumpMap_Xp("BumpXp", 2D) = "bump" {}
 		_BumpMap_Yn("BumpYn", 2D) = "bump" {}
 		_BumpMap_Yp("BumpYp", 2D) = "bump" {}
 		_BumpMap_Zn("BumpZn", 2D) = "bump" {}
 		_BumpMap_Zp("BumpZp", 2D) = "bump" {}
+
 		_BumpScale("Normal scale", Float) = 1
 		_SpecColor("Specular Tint", Color) = (0,0,0,1)
 		_Shininess("Shininess", Float) = 1
+
+		_DayLight("Daylight Multiplier", Float) = 0
+		_EmitColor("Emission Tint", Color) = (0,0,0,1)
+
 		_PlanetOrigin("Sphere Center", Vector) = (0,0,0,1)
 		_SunPos("_SunPos", Vector) = (0,0,0)
 		_SunRadius("_SunRadius", Float) = 1
@@ -76,9 +83,11 @@ Shader "Terrain/ScaledMesh2"
 			CUBEMAP_DEF(_MainTex_Xn, _MainTex_Xp, _MainTex_Yn, _MainTex_Yp, _MainTex_Zn, _MainTex_Zp)
 			CUBEMAP_DEF(_BumpMap_Xn, _BumpMap_Xp, _BumpMap_Yn, _BumpMap_Yp, _BumpMap_Zn, _BumpMap_Zp)
 
+			float _DayLight;
 			float _BumpScale;
 			float _Shininess;
 			fixed4 _Color;
+			fixed4 _EmitColor;
 
 			float _SunRadius = 1;
 			float3 _SunPos;
@@ -170,8 +179,15 @@ Shader "Terrain/ScaledMesh2"
 				return c;
 			}
 
+			inline half4 DiffuseColorLight( half3 lightDir, half3 normal, half4 color, half atten )
+			{
+				half diffuse = dot( normal, lightDir );
 
-
+				half4 c;
+				c.rgb = _LightColor0.a*(color.rgb * diffuse ) * (atten * 2);
+				c.a = diffuse*(atten * 2);
+				return c;
+			}
 			//Shadows
 			//Same eclipse function from scatterer
 			half EclipseShadow(float3 worldPos, float lightSourceRadius, float occluderSphereRadius, float3 worldLightPos,float3 occluderSpherePosition)
@@ -250,9 +266,12 @@ Shader "Terrain/ScaledMesh2"
 				fout OUT;
 				half4 color;
 				half4 main;
+				half4 emit;
+				half4 emitTint = _EmitColor;
 				half4 specColor = _SpecColor;
 
 				main = GetCubeMap(_MainTex_Xn, _MainTex_Xp, _MainTex_Yn, _MainTex_Yp, _MainTex_Zn, _MainTex_Zp, IN.objMain.xyz);
+				emit = GetCubeMap(_BumpMap_Xn, _BumpMap_Xp, _BumpMap_Yn, _BumpMap_Yp, _BumpMap_Zn, _BumpMap_Zp, IN.objMain.xyz);
 
 				half3 tnormal = UnpackScaleNormal(GetCubeMap(_BumpMap_Xn, _BumpMap_Xp, _BumpMap_Yn, _BumpMap_Yp, _BumpMap_Zn, _BumpMap_Zp, IN.objMain.xyz), _BumpScale);
 				half3 worldNormal;
@@ -262,13 +281,15 @@ Shader "Terrain/ScaledMesh2"
 
 				color = _Color * main.rgba;
 
-
 				//lighting
 				half4 scolor = SpecularColorLight(_WorldSpaceLightPos0, IN.viewDir, worldNormal, color, specColor, _Shininess, LIGHT_ATTENUATION(IN));
+				emit.rgba = (1-emit.b) * emitTint;
+				half4 emitColor = DiffuseColorLight(-_WorldSpaceLightPos0, worldNormal, emit, LIGHT_ATTENUATION(IN));
 				scolor.a = 1;
 
 				scolor.rgb *= MultiBodyShadow(IN.worldVert, _SunRadius, _SunPos, _ShadowBodies);
-				OUT.color = lerp(scolor, color, 0);
+				emitColor = lerp(emitColor, emit, _DayLight);
+				OUT.color = max(scolor, emitColor/2);// + emitColor.b;
 
 				OUT.color.a *= step(0, dot(IN.viewDir, worldNormal));
 

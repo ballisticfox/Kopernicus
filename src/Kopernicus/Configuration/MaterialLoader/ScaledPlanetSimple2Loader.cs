@@ -62,6 +62,18 @@ namespace Kopernicus.Configuration.MaterialLoader
             get { return Shininess; }
             set { Shininess = value; }
         }
+        [ParserTarget("dayLightRange")]
+        public NumericParser<Single> DaylightSetter
+        {
+            get { return Daylight; }
+            set { Daylight = value; }
+        }
+        [ParserTarget("emitColor")]
+        public ColorParser EmitColorSetter
+        {
+            get { return EmitColor; }
+            set { EmitColor = value; }
+        }
 
         // Base (RGB) Gloss (A), default = "white" { }
         [ParserTarget("mainTexXn")]

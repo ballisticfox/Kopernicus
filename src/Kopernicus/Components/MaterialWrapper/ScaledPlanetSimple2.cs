@@ -86,6 +86,15 @@ namespace Kopernicus.Components.MaterialWrapper
             public const String SHININESS_KEY = "_Shininess";
             public Int32 ShininessId { get; private set; }
 
+            public const String DAYLIGHT_KEY = "_DayLight";
+            public Int32 DaylightID { get; private set; }
+
+
+            public const String EMIT_COLOR_KEY = "_EmitColor";
+            public Int32 EmitColorID { get; private set; }
+
+
+
             //Ocean Radius, radius of the celestial body * Worldscale
 
             //Planet Origin
@@ -126,9 +135,11 @@ namespace Kopernicus.Components.MaterialWrapper
 
                 BumpScaleID = Shader.PropertyToID(BUMP_SCALE_KEY);
 
-
                 SpecColorId = Shader.PropertyToID(SPEC_COLOR_KEY);
                 ShininessId = Shader.PropertyToID(SHININESS_KEY);
+
+                DaylightID = Shader.PropertyToID(DAYLIGHT_KEY);
+                EmitColorID = Shader.PropertyToID(EMIT_COLOR_KEY);
             }
         }
 
@@ -163,6 +174,17 @@ namespace Kopernicus.Components.MaterialWrapper
             get { return GetFloat(Properties.Instance.ShininessId); }
             set { SetFloat(Properties.Instance.ShininessId, Mathf.Clamp(value, 0f, 10000f)); }
         }
+        public Single Daylight
+        {
+            get { return GetFloat(Properties.Instance.DaylightID); }
+            set { SetFloat(Properties.Instance.DaylightID, value); }
+        }
+        public Color EmitColor
+        {
+            get { return GetColor(Properties.Instance.EmitColorID); }
+            set { SetColor(Properties.Instance.EmitColorID, value); }
+        }
+
         public Single BumpScale
         {
             get { return GetFloat(Properties.Instance.BumpScaleID); }
