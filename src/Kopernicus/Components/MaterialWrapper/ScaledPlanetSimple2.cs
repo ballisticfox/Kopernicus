@@ -53,6 +53,7 @@ namespace Kopernicus.Components.MaterialWrapper
             public Int32 MainTex_ZpId { get; private set; }
             ///
 
+        
             // Cubemap Normal map, default = "bump" { }
             public const String BUMP_MAP_Xn_KEY = "_BumpMap_Xn";
             public Int32 BumpMap_XnId { get; private set; }

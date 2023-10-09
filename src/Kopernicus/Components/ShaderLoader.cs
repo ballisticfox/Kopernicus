@@ -51,7 +51,7 @@ namespace Kopernicus.Components
         /// Manually load Shader Asset bundles.
         /// </summary>
         [SuppressMessage("ReSharper", "ConvertIfStatementToSwitchStatement")]
-        public static void LoadAssetBundle(String path, String bundleName, Boolean isProAssetBundle)
+        public static void LoadAssetBundle(String path, String bundleName)
         {
             // GameData
             path = Path.Combine(KSPUtil.ApplicationRootPath + "GameData/", path);
@@ -60,23 +60,21 @@ namespace Kopernicus.Components
             if (Application.platform == RuntimePlatform.WindowsPlayer &&
             SystemInfo.graphicsDeviceVersion.StartsWith("OpenGL"))
             {
-                path = Path.Combine(path, bundleName + "-linux"); // fixes OpenGL on windows
+                path = Path.Combine(path, bundleName + "-linux.unity3d"); // fixes OpenGL on windows
             }
             else if (Application.platform == RuntimePlatform.WindowsPlayer)
             {
-                path = Path.Combine(path, bundleName + "-windows");
+                path = Path.Combine(path, bundleName + "-windows.unity3d");
             }
             else if (Application.platform == RuntimePlatform.LinuxPlayer)
             {
-                path = Path.Combine(path, bundleName + "-linux");
+                path = Path.Combine(path, bundleName + "-linux.unity3d");
             }
             else
             {
-                path = Path.Combine(path, bundleName + "-macosx");
+                path = Path.Combine(path, bundleName + "-macosx.unity3d");
             }
 
-            if (isProAssetBundle)
-                path = path + ".unity3d";
             Debug.Log("[Kopernicus] ShaderLoader: Loading asset bundle at path " + path);
 
             AssetBundle bundle = AssetBundle.LoadFromFile(path);
