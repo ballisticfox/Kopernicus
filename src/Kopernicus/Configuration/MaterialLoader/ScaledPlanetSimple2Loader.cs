@@ -80,39 +80,63 @@ namespace Kopernicus.Configuration.MaterialLoader
         public Texture2DParser MainTexXnSetter
         {
             get { return MainTex_Xn; }
-            set { MainTex_Xn = value; }
+            set 
+            {
+                MainTex_Xn = value;
+                MainTex_Xn.wrapMode = TextureWrapMode.Clamp;
+            }
         }
         [ParserTarget("mainTexXp")]
         public Texture2DParser MainTexXpSetter
         {
             get { return MainTex_Xp; }
-            set { MainTex_Xp = value; }
+            set 
+            { 
+                MainTex_Xp = value;
+                MainTex_Xp.wrapMode = TextureWrapMode.Clamp;
+            }
         }
 
         [ParserTarget("mainTexYn")]
         public Texture2DParser MainTexYnSetter
         {
             get { return MainTex_Yn; }
-            set { MainTex_Yn = value; }
+            set 
+            {
+                MainTex_Yn = value;
+                MainTex_Yn.wrapMode = TextureWrapMode.Clamp;
+            }
         }
         [ParserTarget("mainTexYp")]
         public Texture2DParser MainTexYpSetter
         {
             get { return MainTex_Yp; }
-            set { MainTex_Yp = value; }
+            set 
+            {
+                MainTex_Yp = value;
+                MainTex_Yp.wrapMode = TextureWrapMode.Clamp;
+            }
         }
 
         [ParserTarget("mainTexZn")]
         public Texture2DParser MainTexZnSetter
         {
             get { return MainTex_Zn; }
-            set { MainTex_Zn = value; }
+            set 
+            {
+                MainTex_Zn = value;
+                MainTex_Zn.wrapMode = TextureWrapMode.Clamp;
+            }
         }
         [ParserTarget("mainTexZp")]
         public Texture2DParser MainTexZpSetter
         {
             get { return MainTex_Zp; }
-            set { MainTex_Zp = value; }
+            set 
+            {
+                MainTex_Zp = value;
+                MainTex_Zp.wrapMode = TextureWrapMode.Clamp;
+            }
         }
 
         // Normal map, default = "bump" { }
@@ -120,37 +144,61 @@ namespace Kopernicus.Configuration.MaterialLoader
         public Texture2DParser BumpMapXnSetter
         {
             get { return BumpMap_Xn; }
-            set { BumpMap_Xn = value; }
+            set 
+            { 
+                BumpMap_Xn = value;
+                BumpMap_Xn.wrapMode = TextureWrapMode.Clamp;
+            }
         }
         [ParserTarget("bumpMapXp")]
         public Texture2DParser BumpMapXpSetter
         {
             get { return BumpMap_Xp; }
-            set { BumpMap_Xp = value; }
+            set 
+            { 
+                BumpMap_Xp = value;
+                BumpMap_Xp.wrapMode = TextureWrapMode.Clamp;
+            }
         }
         [ParserTarget("bumpMapYn")]
         public Texture2DParser BumpMapYnSetter
         {
             get { return BumpMap_Yn; }
-            set { BumpMap_Yn = value; }
+            set 
+            {
+                BumpMap_Yn = value;
+                BumpMap_Yn.wrapMode = TextureWrapMode.Clamp;
+            }
         }
         [ParserTarget("bumpMapYp")]
         public Texture2DParser BumpMapYpSetter
         {
             get { return BumpMap_Yp; }
-            set { BumpMap_Yp = value; }
+            set 
+            {
+                BumpMap_Yp = value;
+                BumpMap_Yp.wrapMode = TextureWrapMode.Clamp;
+            }
         }
         [ParserTarget("bumpMapZn")]
         public Texture2DParser BumpMapZnSetter
         {
             get { return BumpMap_Zn; }
-            set { BumpMap_Zn = value; }
+            set 
+            {
+                BumpMap_Zn = value;
+                BumpMap_Zn.wrapMode = TextureWrapMode.Clamp;
+            }
         }
         [ParserTarget("bumpMapZp")]
         public Texture2DParser BumpMapZpSetter
         {
             get { return BumpMap_Zp; }
-            set { BumpMap_Zp = value; }
+            set 
+            {
+                BumpMap_Zp = value;
+                BumpMap_Zp.wrapMode = TextureWrapMode.Clamp;
+            }
         }
 
         // Normal Map Scale/Strength
@@ -158,7 +206,10 @@ namespace Kopernicus.Configuration.MaterialLoader
         public NumericParser<Single> BumpScaleSetter
         {
             get { return BumpScale; }
-            set { BumpScale = value; }
+            set 
+            {
+                BumpScale = value;
+            }
         }
 
 
