@@ -148,7 +148,12 @@
     <Compile Include="Components\MaterialWrapper\ScaledPlanetSimple2.cs" />
     <Compile Include="Components\ModularScatter\PQSMod_KopernicusLandClassScatterQuad.cs" />
     <Compile Include="Components\PQSLandControlFixer.cs" />
+    <Compile Include="Components\PQSMod_VertexColorCubeMap.cs" />
+    <Compile Include="Components\PQSMod_VertexHeightCubeMap.cs" />
     <Compile Include="Configuration\MaterialLoader\ScaledPlanetSimple2Loader.cs" />
+    <Compile Include="Configuration\ModLoader\VertexColorCubeMap.cs" />
+    <Compile Include="Configuration\ModLoader\VertexHeightCubeMap.cs" />
+    <Compile Include="OnDemand\MapSODemandLarge.cs" />
     <Compile Include="ShadowMan\CelestialBodySortableByDistance.cs" />
     <Compile Include="ShadowMan\ShadowMan.cs" />
     <Compile Include="ShadowMan\Utilities\BufferManager.cs" />
