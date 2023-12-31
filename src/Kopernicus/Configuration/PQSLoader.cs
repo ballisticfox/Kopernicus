@@ -671,7 +671,7 @@ namespace Kopernicus.Configuration
             }
 #endif
             // hacky hack
-            if (generatedBody.celestialBody.isHomeWorld && Value.gameObject.GetChild("KSC") == null)
+            if (generatedBody.celestialBody.name.Equals(RuntimeUtility.RuntimeUtility.KopernicusConfig.HomeWorldName) && (Value.gameObject.GetChild("KSC") == null))
             {
                 PSystemBody kerbinTemplate = Utility.FindBody(Injector.StockSystemPrefab.rootBody, "Kerbin");
                 GameObject scTree = kerbinTemplate.pqsVersion.gameObject.GetChild("KSC");
@@ -695,11 +695,6 @@ namespace Kopernicus.Configuration
                 roc.currentCBName = Value.name;
             }
 
-            //Add the biome sampler
-            if (!Utility.HasMod<PQSMod_BiomeSampler>(Value))
-            {
-                Utility.AddMod<PQSMod_BiomeSampler>(Value, 0);
-            }
             //Add createColorsFixes
             if (!Utility.HasMod<PQSLandControlFixer>(Value))
             {
@@ -829,11 +824,6 @@ namespace Kopernicus.Configuration
                 roc.currentCBName = Value.name;
             }
 
-            //Add the biome sampler
-            if (!Utility.HasMod<PQSMod_BiomeSampler>(Value))
-            {
-                Utility.AddMod<PQSMod_BiomeSampler>(Value, 0);
-            }
             //Add createColorsFixes
             if (!Utility.HasMod<PQSLandControlFixer>(Value))
             {

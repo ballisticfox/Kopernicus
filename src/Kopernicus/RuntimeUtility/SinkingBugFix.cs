@@ -23,8 +23,10 @@
  * https://kerbalspaceprogram.com
  */
 
+using KSP.UI.Screens;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 namespace Kopernicus.RuntimeUtility
 {
@@ -32,13 +34,13 @@ namespace Kopernicus.RuntimeUtility
     public class SinkingBugFix : MonoBehaviour
     {
         internal static Dictionary<Collider, bool>[] colliderStatus;
-        internal uint counter = 1500;
+        internal uint counter = 1000;
         private static SinkingBugFix instance = null;
         private static bool safeToJustDisengage = false;
 
         private void Start()
         {
-            if ((instance != null) || ((!HighLogic.LoadedSceneIsFlight) && (!HighLogic.LoadedScene.Equals(GameScenes.MAINMENU))))
+            if ((!HighLogic.LoadedSceneIsFlight) && (!HighLogic.LoadedScene.Equals(GameScenes.MAINMENU)) && (!HighLogic.LoadedScene.Equals(GameScenes.SPACECENTER)) && (!HighLogic.LoadedScene.Equals(GameScenes.TRACKSTATION)))
             {
                 instance = null;
                 this.gameObject.DestroyGameObjectImmediate();
@@ -46,6 +48,11 @@ namespace Kopernicus.RuntimeUtility
             }
             else
             {
+                if ((instance != null) && (instance != this))
+                {
+                    instance.gameObject.DestroyGameObjectImmediate();
+                    instance = null;
+                }
                 instance = this;
             }
             if (RuntimeUtility.KopernicusConfig.DisableFarAwayColliders)
@@ -56,7 +63,6 @@ namespace Kopernicus.RuntimeUtility
                     for (Int32 i = 0; i < FlightGlobals.Bodies.Count; i++)
                     {
                         colliderStatus[i] = new Dictionary<Collider, bool>();
-                        RecordColliderState(FlightGlobals.Bodies[i], i);
                     }
                 }
                 catch
@@ -69,7 +75,7 @@ namespace Kopernicus.RuntimeUtility
         {
             if (RuntimeUtility.KopernicusConfig.DisableFarAwayColliders)
             {
-                if (HighLogic.LoadedScene.Equals(GameScenes.SPACECENTER))
+                if ((HighLogic.LoadedScene.Equals(GameScenes.SPACECENTER) || HighLogic.LoadedScene.Equals(GameScenes.TRACKSTATION)) && (!RuntimeUtility.KopernicusConfig.TrulyMassiveSystem))
                 {
                     this.gameObject.DestroyGameObjectImmediate();
                     return;
@@ -81,17 +87,17 @@ namespace Kopernicus.RuntimeUtility
                         FloatingOrigin.fetch.ResetOffset();
                     }
                     catch
-                    { 
+                    {
                     }
                     this.gameObject.DestroyGameObjectImmediate();
                     return;
                 }
-                CelestialBody mainBody = null;
+                MapObject mainBody = null;
                 counter++;
-                if (counter > 1500)
+                if (counter > 1000)
                 {
                     counter = 0;
-                    if (FlightGlobals.ActiveVessel != null)
+                    if ((!RuntimeUtility.KopernicusConfig.TrulyMassiveSystem) && (FlightGlobals.ActiveVessel != null))
                     {
                         if ((FlightGlobals.ActiveVessel.radarAltitude > 2500) || (!FlightGlobals.currentMainBody.hasSolidSurface))
                         {
@@ -111,11 +117,15 @@ namespace Kopernicus.RuntimeUtility
                     Vector3 sceneCenter = Vector3.zero;
                     try
                     {
-                        if (FlightGlobals.Bodies.Count > 1)
+                        if (HighLogic.LoadedScene.Equals(GameScenes.TRACKSTATION))
                         {
-                            mainBody = FlightGlobals.currentMainBody;
-                            sceneCenter = mainBody.transform.position;
+                            mainBody = Planetarium.fetch.Sun.MapObject;
                         }
+                        else if (FlightGlobals.Bodies.Count > 1)
+                        {
+                            mainBody = FlightGlobals.currentMainBody.MapObject;
+                        }
+                        sceneCenter = mainBody.transform.position;
                     }
                     catch
                     {
@@ -123,20 +133,27 @@ namespace Kopernicus.RuntimeUtility
                     }
                     try
                     {
-                        for (Int32 i = 0; i < FlightGlobals.Bodies.Count; i++)
+                        if (HighLogic.LoadedScene.Equals(GameScenes.TRACKSTATION))
                         {
-                            CelestialBody cb = FlightGlobals.Bodies[i];
-                            if ((cb.Get("barycenter", false) || (cb.Get("invisibleScaledSpace", false))))
+                            ReenableAll();
+                        }
+                        else
+                        {
+                            for (Int32 i = 0; i < FlightGlobals.Bodies.Count; i++)
                             {
-                                continue;
-                            }
-                            else if (Vector3.Distance(sceneCenter, cb.transform.position) < 100000000000)
-                            {
-                                RestoreColliderState(i);
-                            }
-                            else if (Vector3.Distance(sceneCenter, cb.transform.position) >= 100000000000)
-                            {
-                                HibernateColliderState(i);
+                                CelestialBody cb = FlightGlobals.Bodies[i];
+                                if ((cb.Get("barycenter", false) || (cb.Get("invisibleScaledSpace", false))))
+                                {
+                                    continue;
+                                }
+                                else if (Vector3.Distance(sceneCenter, cb.transform.position) < 100000000000)
+                                {
+                                    RestoreColliderState(cb, i);
+                                }
+                                else if (Vector3.Distance(sceneCenter, cb.transform.position) >= 100000000000)
+                                {
+                                    HibernateColliderState(cb, i);
+                                }
                             }
                         }
                     }
@@ -148,7 +165,7 @@ namespace Kopernicus.RuntimeUtility
                 }
             }
         }
-        private void RestoreColliderState(int index)
+        private void RestoreColliderState(CelestialBody cb, int index)
         {
             foreach (Collider collider in colliderStatus[index].Keys)
             {
@@ -156,15 +173,7 @@ namespace Kopernicus.RuntimeUtility
                 colliderStatus[index].Remove(collider);
             }
         }
-        private void HibernateColliderState(int index)
-        {
-            foreach (Collider collider in colliderStatus[index].Keys)
-            {
-                colliderStatus[index][collider] = collider.enabled;
-                collider.enabled = false;
-            }
-        }
-        private void RecordColliderState(CelestialBody cb, int index)
+        private void HibernateColliderState(CelestialBody cb, int index)
         {
             foreach (Collider collider in cb.GetComponentsInChildren<Collider>(true))
             {
@@ -176,6 +185,7 @@ namespace Kopernicus.RuntimeUtility
                 {
                     colliderStatus[index][collider] = collider.enabled;
                 }
+                collider.enabled = false;
             }
             foreach (Collider collider in cb.scaledBody.GetComponentsInChildren<Collider>(true))
             {
@@ -187,6 +197,7 @@ namespace Kopernicus.RuntimeUtility
                 {
                     colliderStatus[index][collider] = collider.enabled;
                 }
+                collider.enabled = false;
             }
         }
         private void OnDisable()
@@ -212,7 +223,7 @@ namespace Kopernicus.RuntimeUtility
                     }
                     try
                     {
-                        RestoreColliderState(i);
+                        RestoreColliderState(cb, i);
                     }
                     catch
                     {

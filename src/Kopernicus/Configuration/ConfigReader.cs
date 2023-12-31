@@ -37,6 +37,8 @@ namespace Kopernicus.Configuration
     public class ConfigReader
     {
         [Persistent]
+        public string HomeWorldName = "Kerbin";
+        [Persistent]
         public bool EnforceShaders = false;
         [Persistent]
         public bool WarnShaders = false;
@@ -59,13 +61,13 @@ namespace Kopernicus.Configuration
         [Persistent]
         public bool DisableFarAwayColliders = true;
         [Persistent]
+        public bool TrulyMassiveSystem = false;
+        [Persistent]
         public bool EnableAtmosphericExtinction = false;
         [Persistent]
         public bool UseStockMohoTemplate = true;
         [Persistent]
         public bool ResetFloatingOriginOnKSCReturn = false;
-        [Persistent]
-        public int ScatterLatLongDecimalPrecision = 5;
         [Persistent]
         public bool UseOnDemandLoader = false;
         [Persistent]
@@ -105,6 +107,7 @@ namespace Kopernicus.Configuration
             {
                 ConfigNode.LoadObjectFromConfig(this, baseConfigs[0].config);
                 Debug.Log("[Kopernicus Configurations] Using: ");
+                Debug.Log("HomeWorldName: " + HomeWorldName);
                 Debug.Log("EnforceShaders: " + EnforceShaders);
                 Debug.Log("WarnShaders: " + WarnShaders);
                 Debug.Log("EnforcedShaderLevel: " + EnforcedShaderLevel);
@@ -116,10 +119,10 @@ namespace Kopernicus.Configuration
                 Debug.Log("HandleHomeworldAtmosphericUnitDisplay: " + HandleHomeworldAtmosphericUnitDisplay);
                 Debug.Log("UseIncorrectScatterDensityLogic: " + UseIncorrectScatterDensityLogic);
                 Debug.Log("DisableFarAwayColliders: " + DisableFarAwayColliders);
+                Debug.Log("TrulyMassiveSystem: " + TrulyMassiveSystem);
                 Debug.Log("EnableAtmosphericExtinction: " + EnableAtmosphericExtinction);
                 Debug.Log("UseStockMohoTemplate: " + UseStockMohoTemplate);
                 Debug.Log("ResetFloatingOriginOnKSCReturn: " + ResetFloatingOriginOnKSCReturn);
-                Debug.Log("ScatterLatLongDecimalPrecision: " + ScatterLatLongDecimalPrecision);
                 Debug.Log("UseOnDemandLoader: " + UseOnDemandLoader);
                 Debug.Log("UseRealWorldDensity: " + UseRealWorldDensity);
                 Debug.Log("RecomputeSOIAndHillSpheres: " + RecomputeSOIAndHillSpheres);

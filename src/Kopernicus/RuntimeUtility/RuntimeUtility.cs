@@ -140,7 +140,7 @@ namespace Kopernicus.RuntimeUtility
             // Add Callback only if necessary
             if (KopernicusConfig.HandleHomeworldAtmosphericUnitDisplay)
             {
-                if (FlightGlobals.GetHomeBody().atmospherePressureSeaLevel != 101.324996948242)
+                if (FlightGlobals.GetBodyByName(RuntimeUtility.KopernicusConfig.HomeWorldName).atmospherePressureSeaLevel != 101.324996948242)
                     KbApp_PlanetParameters.CallbackAfterActivate += CallbackAfterActivate;
             }
 
@@ -385,7 +385,7 @@ namespace Kopernicus.RuntimeUtility
 
         private static void CalculateHomeBodySMA()
         {
-            CelestialBody homeBody = FlightGlobals.GetHomeBody();
+            CelestialBody homeBody = FlightGlobals.GetBodyByName(RuntimeUtility.KopernicusConfig.HomeWorldName);
             if (homeBody == null)
             {
                 return;
@@ -467,18 +467,18 @@ namespace Kopernicus.RuntimeUtility
                 return;
             }
 
-            if (FlightGlobals.GetHomeBody() == null)
+            if (FlightGlobals.GetBodyByName(RuntimeUtility.KopernicusConfig.HomeWorldName) == null)
             {
                 return;
             }
 
-            MusicLogic.fetch.flightMusicSpaceAltitude = FlightGlobals.GetHomeBody().atmosphereDepth;
+            MusicLogic.fetch.flightMusicSpaceAltitude = FlightGlobals.GetBodyByName(RuntimeUtility.KopernicusConfig.HomeWorldName).atmosphereDepth;
         }
 
         // Update the initialTarget of the tracking station
         private static void ApplyInitialTarget()
         {
-            CelestialBody home = PSystemManager.Instance.localBodies.Find(b => b.isHomeWorld);
+            CelestialBody home = PSystemManager.Instance.localBodies.Find(b => b.name.Equals(RuntimeUtility.KopernicusConfig.HomeWorldName));
             ScaledMovement movement = home.scaledBody.GetComponentInChildren<ScaledMovement>();
             PlanetariumCamera.fetch.initialTarget = movement;
         }
@@ -921,9 +921,9 @@ namespace Kopernicus.RuntimeUtility
                 {
                     FloatingOrigin.fetch.ResetOffset();
                 }
-
                 // Get the parental body
-                CelestialBody body = Planetarium.fetch != null ? Planetarium.fetch.Home : FlightGlobals.Bodies.Find(b => b.isHomeWorld);
+                CelestialBody body = FlightGlobals.GetBodyByName(KopernicusConfig.HomeWorldName);
+                Planetarium.fetch.Home = body;
 
                 // If there's no body, exit.
                 if (body == null)
@@ -1066,7 +1066,7 @@ namespace Kopernicus.RuntimeUtility
             {
                 if (KopernicusStar.UseMultiStarLogic)
                 {
-                    animations[i].target = KopernicusStar.GetBrightest(FlightGlobals.GetHomeBody()).gameObject.transform;
+                    animations[i].target = KopernicusStar.GetBrightest(FlightGlobals.GetBodyByName(RuntimeUtility.KopernicusConfig.HomeWorldName)).gameObject.transform;
                 }
                 else
                 {
@@ -1141,10 +1141,10 @@ namespace Kopernicus.RuntimeUtility
 
         private void FixFlags()
         {
-            if (FlightGlobals.GetHomeBody() != null && FlightGlobals.GetHomeBody().pqsController != null)
+            if (FlightGlobals.GetBodyByName(RuntimeUtility.KopernicusConfig.HomeWorldName) != null && FlightGlobals.GetBodyByName(RuntimeUtility.KopernicusConfig.HomeWorldName).pqsController != null)
             {
                 PQSCity KSC = FlightGlobals
-                .GetHomeBody()
+                .GetBodyByName(RuntimeUtility.KopernicusConfig.HomeWorldName)
                 .pqsController
                 .GetComponentsInChildren<PQSCity>(true)?
                 .FirstOrDefault(p => p.name == "KSC");
@@ -1188,6 +1188,7 @@ namespace Kopernicus.RuntimeUtility
                     configFile.WriteLine("// Kopernicus base configuration.  Provides ability to flag things and set user options.  Generates at defaults for stock settings and warnings config.");
                     configFile.WriteLine("Kopernicus_config");
                     configFile.WriteLine("{");
+                    configFile.WriteLine("	HomeWorldName = " + KopernicusConfig.HomeWorldName + " //String with the home bodies name. Allows for directly changing the home body to a differently named body. Default is Kerbin.");
                     configFile.WriteLine("	EnforceShaders = " + KopernicusConfig.EnforceShaders.ToString() + " //Boolean.  Whether or not to force the user into EnforcedShaderLevel, not allowing them to change settings.");
                     configFile.WriteLine("	WarnShaders = " + KopernicusConfig.WarnShaders.ToString() + " //Boolean.  Whether or not to warn the user with a message if not using EnforcedShaderLevel.");
                     configFile.WriteLine("	EnforcedShaderLevel = " + KopernicusConfig.EnforcedShaderLevel.ToString() + " //Integer.  A number defining the enforced shader level for the above parameters.  0=Low,1=Medium,2=High,3=Ultra.");
@@ -1206,10 +1207,10 @@ namespace Kopernicus.RuntimeUtility
                     configFile.WriteLine("	HandleHomeworldAtmosphericUnitDisplay = " + KopernicusConfig.HandleHomeworldAtmosphericUnitDisplay.ToString() + " //Boolean.  This is for calculating 1atm unit at home world.  Normally should be true, but mods like PlanetaryInfoPlus may want to set this false.");
                     configFile.WriteLine("	UseIncorrectScatterDensityLogic = " + KopernicusConfig.UseIncorrectScatterDensityLogic.ToString() + " //Boolean.  This is a compatability option for old modpacks that were built with the old (wrong) density logic in mind.  Turn on if scatters seem too dense.  Please do not use in true in new releases.");
                     configFile.WriteLine("	DisableFarAwayColliders  = " + KopernicusConfig.DisableFarAwayColliders.ToString() + " //Boolean.  Disables distant colliders farther away than stock eeloo. This fixes the distant body sinking bug, but keeping track of the collider state has a slight performance penalty. Advised to disable in smaller than or equal to stock sized systems. Be advised this breaks raycasts beyond stock eeloo range.");
+                    configFile.WriteLine("	TrulyMassiveSystem  = " + KopernicusConfig.TrulyMassiveSystem.ToString() + " //Boolean.  Disables select distant collider optimizations that don't work well in systems with a lot of empty space that are truly massive in size/distance. Small Performance Hit.");
                     configFile.WriteLine("	EnableAtmosphericExtinction = " + KopernicusConfig.EnableAtmosphericExtinction.ToString() + " //Whether to use built-in atmospheric extinction effect of lens flares. This is somewhat expensive - O(nlog(n)) on average.");
                     configFile.WriteLine("	UseStockMohoTemplate = " + KopernicusConfig.UseStockMohoTemplate.ToString() + " //Boolean. This uses the stock Moho template with the Mohole bug/feature. Planet packs may customize this as desired.  Be aware disabling this disables the Mohole.");
                     configFile.WriteLine("	ResetFloatingOriginOnKSCReturn = " + KopernicusConfig.ResetFloatingOriginOnKSCReturn.ToString() + " //Boolean. Enable this for interstaller (LY+) range planet packs to prevent corruption on return to KSC.");
-                    configFile.WriteLine("	ScatterLatLongDecimalPrecision = " + KopernicusConfig.ScatterLatLongDecimalPrecision.ToString() + " //Integer. Default 5.  Higher values allow for smoother scatter/biome precision, at the cost of performance.  Leave untouched if unsure.");
                     configFile.WriteLine("	UseOnDemandLoader = " + KopernicusConfig.UseOnDemandLoader.ToString() + " //Boolean. Default False.  Turning this on can save ram and thus improve perforamnce situationally but will break some mods requiring long distance viewing and also increase stutter.");
                     configFile.WriteLine("	UseRealWorldDensity = " + KopernicusConfig.UseRealWorldDensity.ToString() + " //Boolean. Default False.  Turning this on will calculate realistic body gravity and densities for all or Kerbolar/stock bodies based on size of said body.  Don't turn this on unless you understand what it does.");
                     configFile.WriteLine("	RecomputeSOIAndHillSpheres = " + KopernicusConfig.RecomputeSOIAndHillSpheres.ToString() + " //Boolean. Default False.  Turning this on will recompute hill spheres and SOIs using standard math for bodies that have been modified for density in anyway by UseRealWorldDensity. Global effect/Not affected by LimitRWDensityToStockBodies. Leave alone if you don't understand.");

@@ -23,21 +23,20 @@
  * https://kerbalspaceprogram.com
  */
 
-using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-// ReSharper disable once RedundantUsingDirective
-using System.IO;
-using System.Linq;
-using System.Reflection.Emit;
-using System.Reflection;
-// ReSharper disable once RedundantUsingDirective
-using System.Security.Cryptography;
 using HarmonyLib;
 using Kopernicus.ConfigParser;
 using Kopernicus.Configuration;
 using Kopernicus.Constants;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Reflection.Emit;
+using System.Security.Cryptography;
 using UnityEngine;
+using static Targeting;
 
 namespace Kopernicus
 {
@@ -58,7 +57,6 @@ namespace Kopernicus
         // Whether the injector is currently patching the prefab
         public static Boolean IsInPrefab { get; private set; }
 
-        public static MapSO moho_biomes;
         public static MapSO moho_height;
 
         // Awake() is the first function called in the lifecycle of a Unity3D MonoBehaviour.  In the case of KSP,
@@ -80,7 +78,6 @@ namespace Kopernicus
                 Destroy(this);
                 return;
             }
-
             // Log the current version to the log
             String kopernicusVersion = CompatibilityChecker.VERSION_MAJOR + "." +
                                        CompatibilityChecker.VERSION_MINOR + "." + CompatibilityChecker.REVISION +
@@ -89,30 +86,7 @@ namespace Kopernicus
                                 Versioning.Revision;
             Debug.Log("[Kopernicus] Running Kopernicus " + kopernicusVersion + " on KSP " + kspVersion);
             //Harmony stuff
-            if (RuntimeUtility.RuntimeUtility.KopernicusConfig.UseStockMohoTemplate)
-            {
-                MapSO[] so = Resources.FindObjectsOfTypeAll<MapSO>();
 
-                foreach (MapSO mapSo in so)
-                {
-                    if (mapSo.MapName == "moho_biomes"
-                        && mapSo.Size == 6291456
-                        && mapSo._data[0] == 216
-                        && mapSo._data[1] == 178
-                        && mapSo._data[2] == 144)
-                    {
-                        moho_biomes = mapSo;
-                    }
-                    else if (mapSo.MapName == "moho_height"
-                             && mapSo.Size == 2097152
-                             && mapSo._data[1509101] == 146
-                             && mapSo._data[1709108] == 162
-                             && mapSo._data[1909008] == 216)
-                    {
-                        moho_height = mapSo;
-                    }
-                }
-            }
             Harmony harmony = new Harmony("Kopernicus");
             harmony.PatchAll();
 
@@ -139,6 +113,13 @@ namespace Kopernicus
                     Logger.Default.Log("Injector.Awake(): If PSystemManager.Instance is null, there is nothing to do");
                     DisplayWarning();
                     return;
+                }
+
+                if (RuntimeUtility.RuntimeUtility.KopernicusConfig.UseStockMohoTemplate)
+                {
+                    moho_height =
+                        Utility.FindBody(PSystemManager.Instance.systemPrefab.rootBody, "Moho")
+                            ?.pqsVersion?.GetComponentInChildren<PQSMod_VertexHeightMap>()?.heightMap;
                 }
 
                 // Was the system template modified?
@@ -179,6 +160,8 @@ namespace Kopernicus
 
                 // Clear space center instance so it will accept nouveau Kerbin
                 SpaceCenter.Instance = null;
+                //Homeworld setup
+                PSystemSetup.Instance.pqsToActivate = RuntimeUtility.RuntimeUtility.KopernicusConfig.HomeWorldName;
 
                 // Add a handler so that we can do post spawn fixups.
                 PSystemManager.Instance.OnPSystemReady.Add(PostSpawnFixups);
@@ -210,18 +193,45 @@ namespace Kopernicus
             {
                 // Log
                 Debug.Log("[Kopernicus]: Post-Spawn");
-
                 // Fire Event
                 Events.OnPreFixing.Fire();
+                //Correct PQS naming for homeworld
+                foreach (PQS pqs in UnityEngine.Object.FindObjectsOfType(typeof(PQS)))
+                {
+                    if (pqs.gameObject.name.Equals("Kerbin"))
+                    {
+                        pqs.name = RuntimeUtility.RuntimeUtility.KopernicusConfig.HomeWorldName;
+                        pqs.gameObject.name = RuntimeUtility.RuntimeUtility.KopernicusConfig.HomeWorldName;
+                    }
+                }
+                CelestialBody hb = FlightGlobals.GetBodyByName(RuntimeUtility.RuntimeUtility.KopernicusConfig.HomeWorldName);
+                PSystemSetup.Instance.pqsToActivate = RuntimeUtility.RuntimeUtility.KopernicusConfig.HomeWorldName;
+                Planetarium.fetch.Home = hb;
+                foreach (PSystemSetup.SpaceCenterFacility sc in PSystemSetup.Instance.SpaceCenterFacilities)
+                {
+                    sc.pqsName = RuntimeUtility.RuntimeUtility.KopernicusConfig.HomeWorldName;
+                    sc.hostBody = hb;
+                }
+                foreach (LaunchSite lc in PSystemSetup.Instance.LaunchSites)
+                {
+                    lc.pqsName = RuntimeUtility.RuntimeUtility.KopernicusConfig.HomeWorldName;
+                }
 
+                foreach (SpaceCenterCamera2 cam in Resources.FindObjectsOfTypeAll<SpaceCenterCamera2>())
+                {
+                    if (cam.pqsName.Equals("Kerbin"))
+                    {
+                        cam.pqsName = RuntimeUtility.RuntimeUtility.KopernicusConfig.HomeWorldName;
+                    }
+                }
                 // Fix the SpaceCenter
-                SpaceCenter.Instance = PSystemManager.Instance.localBodies.First(cb => cb.isHomeWorld)
+                SpaceCenter.Instance = PSystemManager.Instance.localBodies.First(cb => cb.name.Equals(RuntimeUtility.RuntimeUtility.KopernicusConfig.HomeWorldName))
                     .GetComponentsInChildren<SpaceCenter>(true).FirstOrDefault();
+                //Fix space center camera assignments
                 if (SpaceCenter.Instance != null)
                 {
                     SpaceCenter.Instance.Start();
                 }
-
                 // Fix the flight globals index of each body and patch it's SOI
                 Int32 counter = 0;
                 CelestialBody mockBody = null;
@@ -457,12 +467,13 @@ namespace Kopernicus
             Logger.Default.Flush();
         }
     }
+
     [HarmonyPatch(typeof(MapSO), "ConstructBilinearCoords", new Type[] { typeof(float), typeof(float) })]
     public static class MapSOPPatch_Float
     {
         private static bool Prefix(MapSO __instance, float x, float y)
         {
-            if (ReferenceEquals(__instance, Injector.moho_biomes) || ReferenceEquals(__instance, Injector.moho_height))
+            if (ReferenceEquals(__instance, Injector.moho_height))
             {
                 return true;
             }
@@ -492,7 +503,7 @@ namespace Kopernicus
     {
         private static bool Prefix(MapSO __instance, double x, double y)
         {
-            if (ReferenceEquals(__instance, Injector.moho_biomes) || ReferenceEquals(__instance, Injector.moho_height))
+            if (ReferenceEquals(__instance, Injector.moho_height))
             {
                 return true;
             }
@@ -571,7 +582,7 @@ namespace Kopernicus
         {
             FieldInfo PQSMod_sphere_field = AccessTools.Field(typeof(PQSMod), nameof(PQSMod.sphere));
             FieldInfo PQS_sx_field = AccessTools.Field(typeof(PQS), nameof(PQS.sx));
-            MethodInfo GetLongitudeFromSX_method = AccessTools.Method(typeof(Harmony_Utilities), nameof(Harmony_Utilities.GetLongitudeFromSX));
+            MethodInfo GetLongitudeFromSX_method = AccessTools.Method(typeof(PQSLandControl_OnVertexBuildHeight), nameof(GetLongitudeFromSX));
 
             List<CodeInstruction> code = new List<CodeInstruction>(instructions);
 
@@ -586,6 +597,30 @@ namespace Kopernicus
             }
 
             return code;
+        }
+
+        /// <summary>
+        /// Transform the from the sx [-0.25, 0.75] longitude range convention where [-0.25, 0] maps to [270°, 360°]
+        /// and [0, 0.75] maps to [0°, 270°] into a linear [0,1] longitude range.
+        /// </summary>
+        public static double GetLongitudeFromSX(PQS sphere)
+        {
+            if (sphere.sx < 0.0)
+                return sphere.sx + 1.0;
+            return sphere.sx;
+        }
+    }
+
+    [HarmonyPatch(typeof(SpaceCenterCamera2), "Start")]
+    public static class SpaceCenterCamera2_Start
+    {
+        static bool Prefix(SpaceCenterCamera2 __instance)
+        {
+            if (__instance.pqsName.Equals("Kerbin"))
+            {
+                __instance.pqsName = RuntimeUtility.RuntimeUtility.KopernicusConfig.HomeWorldName;
+            }
+            return true;
         }
     }
 
@@ -716,21 +751,6 @@ namespace Kopernicus
                 __instance.lgt.intensity = __instance.scaledSunLight.intensity;
             }
             return false;
-        }
-    }
-
-    public static class Harmony_Utilities
-    {
-
-        /// <summary>
-        /// Transform the from the sx [-0.25, 0.75] longitude range convention where [-0.25, 0] maps to [270°, 360°]
-        /// and [0, 0.75] maps to [0°, 270°] into a linear [0,1] longitude range.
-        /// </summary>
-        public static double GetLongitudeFromSX(PQS sphere)
-        {
-            if (sphere.sx < 0.0)
-                return sphere.sx + 1.0;
-            return sphere.sx;
         }
     }
 }

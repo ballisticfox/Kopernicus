@@ -100,14 +100,6 @@ namespace Kopernicus.Configuration
             set { OnDemandStorage.UseOnDemand = value; }
         }
 
-        // If the OnDemand Biome Systems are enabled
-        [ParserTarget("useOnDemandBiomes")]
-        public NumericParser<Boolean> UseOnDemandBiomes
-        {
-            get { return OnDemandStorage.UseOnDemandBiomes; }
-            set { OnDemandStorage.UseOnDemandBiomes = value; }
-        }
-
         // If the OnDemand System should load missing maps
         [ParserTarget("onDemandLoadOnMissing")]
         public NumericParser<Boolean> OnDemandLoadOnMissing
@@ -391,7 +383,7 @@ namespace Kopernicus.Configuration
                         }
                         else
                         {
-                            AddPreset(newPreset,presetNode);
+                            AddPreset(newPreset, presetNode);
                         }
                     }
                     catch (Exception e)
@@ -450,9 +442,8 @@ namespace Kopernicus.Configuration
 
                     // Parent the generated body to the PSystem
                     body.GeneratedBody.transform.parent = SystemPrefab.transform;
-
                     // Delete ghost space centers
-                    if (!body.GeneratedBody.celestialBody.isHomeWorld && body.GeneratedBody.pqsVersion != null)
+                    if (!(body.Name.Equals(RuntimeUtility.RuntimeUtility.KopernicusConfig.HomeWorldName)) && body.GeneratedBody.pqsVersion != null)
                     {
                         SpaceCenter[] centers = body.GeneratedBody.pqsVersion.GetComponentsInChildren<SpaceCenter>(true);
                         PQSCity[] pqsCitys = body.GeneratedBody.pqsVersion.GetComponentsInChildren<PQSCity>(true);
@@ -474,7 +465,6 @@ namespace Kopernicus.Configuration
                             }
                         }
                     }
-
                     // Event
                     Events.OnLoaderFinalizeBody.Fire(body);
                 }
@@ -482,14 +472,10 @@ namespace Kopernicus.Configuration
                 // Elect root body
                 SystemPrefab.rootBody = bodies.First(p => p.Orbit == null).GeneratedBody;
 
-                // Try to find a home world
-                Body home = bodies.FirstOrDefault(p => p.GeneratedBody.celestialBody.isHomeWorld);
-
-                if (home == null)
+                if (RuntimeUtility.RuntimeUtility.KopernicusConfig.HomeWorldName == "")
                 {
                     throw new Exception("Homeworld body could not be found.");
                 }
-
                 // Sort by distance from parent (discover how this effects local bodies)
                 Utility.DoRecursive(SystemPrefab.rootBody, body => body.children, body => body.children = body.children
                     .OrderBy(b => b.orbitDriver.orbit.semiMajorAxis * (1 + b.orbitDriver.orbit.eccentricity)).ToList());
@@ -505,7 +491,7 @@ namespace Kopernicus.Configuration
                         body.flightGlobalsIndex = index++;
                     }
 
-                    if (body.name.Equals("Kerbin"))
+                    if (body.name.Equals(RuntimeUtility.RuntimeUtility.KopernicusConfig.HomeWorldName))
                     {
                         body.flightGlobalsIndex = 1; // Homeworld
                     }

@@ -1,21 +1,19 @@
 Kopernicus
 ==============================
-October 28th, 2023
+December 30th, 2023
 * Created by: BryceSchroeder and Nathaniel R. Lewis (Teknoman117)
 * Actively maintained by: Prestja and R-T-B.
 * Formerly maintained by: Thomas P., NathanKell and KillAshley
 * Additional Content by: Democat3457, Gravitasi, aftokino, KCreator, Padishar, Kragrathea, OvenProofMars, zengei, MrHappyFace, Sigma88, Majiir (CompatibilityChecker), blackrack/LGHassen (shaders/GPL'd scatterer code)
 * Much thanks to Sarbian for ModuleManager and ModularFlightIntegrator
 
-New in this latest version release-190:
+New in this latest bleeding edge prerelease version release-196 RC1:
 
-1.) Merged all bleeding edge performance enchancing commits, this is going to result in a minor performance boost globally for most users.
+1.) Added Kopernicus_Config.cfg option HomeWorldName, a string, default set to "Kerbin."  This option enables you to for the first time ever, to have a homeworld and KSC at something other than "Kerbin" by changing this simple option, without mucking about with displayName, or worse, cbNameLater, a deprecated option.  cbNameLater will likely be removed in the near future if this works well.
 
-2.) Adopted new toolbar logo, courtesy @JadeOfMaar
+2.) Note you can't just randomly swap your homeworld, you need to edit in a KSC into your target site like always.  This feature is more for pack authors.
 
-3.) Misc minor bugfixes along the way (see bleeding edge PR changelogs at github for details).
-
-See [Known Bugs & Caveats](https://github.com/Kopernicus/Kopernicus/blob/master/BandC.md) for known bugs.
+3.) Because this change involved a lot of restructuring of Kopernicus (which for years, has assumed the homeworld will always be "Kerbin"), this is a bleeding edge testing release for at least a few days.
 
 About
 -----
