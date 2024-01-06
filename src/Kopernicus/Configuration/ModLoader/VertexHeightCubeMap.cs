@@ -60,7 +60,12 @@ namespace RealSolarSystem.KopernicusMods
             get { return Mod.heightMapDeformity; }
             set { Mod.heightMapDeformity = value; }
         }
-
+        [ParserTarget("clampRange")]
+        public NumericParser<Double> clampRange
+        {
+            get { return Mod.edgeClampRange; }
+            set { Mod.edgeClampRange = value; }
+        }
         // Height map offset
         [ParserTarget("scaleDeformityByRadius")]
         public NumericParser<Boolean> scaleDeformityByRadius

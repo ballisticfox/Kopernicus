@@ -50,5 +50,11 @@ namespace RealSolarSystem
             get { return Mod.vertexColorMapZp; }
             set { Mod.vertexColorMapZp = value; }
         }
+        [ParserTarget("clampRange")]
+        public NumericParser<Double> clampRange
+        {
+            get { return Mod.edgeClampRange; }
+            set { Mod.edgeClampRange = value; }
+        }
     }
 }

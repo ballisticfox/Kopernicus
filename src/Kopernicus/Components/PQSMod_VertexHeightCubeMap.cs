@@ -1,7 +1,7 @@
 ﻿/* 
- * This code is adapted from KopernicusExpansion-Continued
- * Available from https://github.com/StollD/KopernicusExpansion-Continued
- */
+* This code is adapted from KopernicusExpansion-Continued
+* Available from https://github.com/StollD/KopernicusExpansion-Continued
+*/
 
 using System;
 using UnityEngine;
@@ -19,11 +19,12 @@ namespace RealSolarSystem
         public MapSO vertexHeightMapYp;
         public MapSO vertexHeightMapZn;
         public MapSO vertexHeightMapZp;
+        public double edgeClampRange;
 
 
-        public Vector3 UVtoXYZ(double u, double v)
+        public Vector3d UVtoXYZ(double u, double v)
         {
-            Vector3 coords = new Vector3();
+            Vector3d coords = new Vector3d();
 
             double theta = 2.0 * Math.PI * u;
             double phi = Math.PI * v;
@@ -34,17 +35,17 @@ namespace RealSolarSystem
 
             return coords;
         }
-        public Vector3 XYZtoFaceUVI(Vector3 coords)
+        public Vector3d XYZtoFaceUVI(Vector3d coords)
         {
             //X = U, Y = V, Z = FaceIndex 
-            Vector3 uvIndex = new Vector3();
-            Vector3 absCoords = new Vector3(Math.Abs(coords.x), Math.Abs(coords.y), Math.Abs(coords.z));
+            Vector3d uvIndex = new Vector3d();
+            Vector3d absCoords = new Vector3d(Math.Abs(coords.x), Math.Abs(coords.y), Math.Abs(coords.z));
 
             Boolean isXPositive = coords.x > 0 ? true : false;
             Boolean isYPositive = coords.y > 0 ? true : false;
             Boolean isZPositive = coords.z > 0 ? true : false;
 
-            float maxAxis = 1;
+            double maxAxis = 1;
 
             //Negative X
             if (!isXPositive && absCoords.x >= absCoords.y && absCoords.x >= absCoords.z)
@@ -104,8 +105,13 @@ namespace RealSolarSystem
         public MapSO.HeightAlpha GetCubeMapHeight(MapSO texXn, MapSO texXp, MapSO texYn, MapSO texYp, MapSO texZn, MapSO texZp, double u, double v)
         {
             MapSO.HeightAlpha ha = new MapSO.HeightAlpha();
-            Vector3 coords = UVtoXYZ(u, v);
-            Vector3 uvIndex = XYZtoFaceUVI(coords);
+            Vector3d coords = UVtoXYZ(u, v);
+            Vector3d uvIndex = XYZtoFaceUVI(coords);
+
+            double Xedge = 1.0d / (texXn.Width / edgeClampRange);
+            //Clamp values near edges to prevent wrapping
+            uvIndex.x = Math.Max(uvIndex.x, Xedge);
+            uvIndex.x = Math.Min(uvIndex.x, 1 - Xedge);
 
             //Xn -> Zn
             if (uvIndex.z == 0)
