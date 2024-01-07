@@ -108,10 +108,12 @@ namespace RealSolarSystem
             Vector3d coords = UVtoXYZ(u, v);
             Vector3d uvIndex = XYZtoFaceUVI(coords);
 
-            double Xedge = 1.0d / (texXn.Width / edgeClampRange);
+            double pixelClamp = 1.0d / (texXn.Width / edgeClampRange);
             //Clamp values near edges to prevent wrapping
-            uvIndex.x = Math.Max(uvIndex.x, Xedge);
-            uvIndex.x = Math.Min(uvIndex.x, 1 - Xedge);
+            uvIndex.x = Math.Max(uvIndex.x, pixelClamp);
+            uvIndex.x = Math.Min(uvIndex.x, 1 - pixelClamp);
+            uvIndex.y = Math.Max(uvIndex.y, pixelClamp);
+            uvIndex.y = Math.Min(uvIndex.y, 1 - pixelClamp);
 
             //Xn -> Zn
             if (uvIndex.z == 0)
