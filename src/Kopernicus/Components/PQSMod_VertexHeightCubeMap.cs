@@ -6,7 +6,7 @@
 using System;
 using UnityEngine;
 
-namespace RealSolarSystem
+namespace Kopernicus.Components
 {
     /// <summary>
     /// A heightmap PQSMod that can parse encoded 16bpp cubemap textures for an effective resolution of 65536x32768

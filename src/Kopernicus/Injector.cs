@@ -217,6 +217,15 @@ namespace Kopernicus
                             cam.pqsName = RuntimeUtility.RuntimeUtility.KopernicusConfig.HomeWorldName;
                         }
                     }
+                    //Correct PQS naming for homeworld
+                    //foreach (PQS pqs in UnityEngine.Object.FindObjectsOfType(typeof(PQS)))
+                    //{
+                    //    if (pqs.gameObject.name.Equals("Kerbin"))
+                    //    {
+                    //        pqs.name = RuntimeUtility.RuntimeUtility.KopernicusConfig.HomeWorldName;
+                    //        pqs.gameObject.name = RuntimeUtility.RuntimeUtility.KopernicusConfig.HomeWorldName;
+                    //    }
+                    //}
                 }
                 catch
                 {
