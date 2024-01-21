@@ -4,13 +4,17 @@
  */
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using Kopernicus.ConfigParser.Attributes;
 using Kopernicus.ConfigParser.BuiltinTypeParsers;
-using Kopernicus.Configuration.ModLoader;
+using Kopernicus.ConfigParser.Enumerations;
 using Kopernicus.Configuration.Parsing;
+using Kopernicus.Components;
 
-namespace RealSolarSystem
+namespace Kopernicus.Configuration.ModLoader
 {
+    [RequireConfigType(ConfigType.Node)]
+    [SuppressMessage("ReSharper", "UnusedMember.Global")]
     public class VertexColorCubeMap : ModLoader<PQSMod_VertexColorCubeMap>
     {
         // The map textures for the planet

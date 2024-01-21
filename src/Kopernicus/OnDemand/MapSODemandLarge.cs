@@ -10,12 +10,10 @@ using Kopernicus.ConfigParser.Attributes;
 using Kopernicus.ConfigParser.Enumerations;
 using Kopernicus.ConfigParser.Interfaces;
 using Kopernicus.Components;
-using Kopernicus.OnDemand;
 using UnityEngine;
 using Kopernicus.Configuration.Parsing;
-using Kopernicus;
 
-namespace RealSolarSystem
+namespace Kopernicus.OnDemand
 {
     /// <summary>
     /// MapSO Replacement to support Texture streaming and textures larger than 16k
