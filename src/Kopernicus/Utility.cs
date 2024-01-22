@@ -332,7 +332,7 @@ namespace Kopernicus
                     ? MeshPreloader.Meshes[cacheFile]
                     : DeserializeMesh(cacheFile);
 
-                scaledVersion.GetComponent<MeshFilter>().sharedMesh.indexFormat = scaledVersion.GetComponent<MeshFilter>().sharedMesh.vertexCount > 65536
+                scaledVersion.GetComponent<MeshFilter>().sharedMesh.indexFormat = scaledVersion.GetComponent<MeshFilter>().sharedMesh.vertexCount > 65535
                     ? UnityEngine.Rendering.IndexFormat.UInt32
                     : UnityEngine.Rendering.IndexFormat.UInt16;
             }
@@ -805,7 +805,7 @@ namespace Kopernicus
 
                     // Create the mesh
                     m = new Mesh();
-                    m.indexFormat = count > (65536) ? UnityEngine.Rendering.IndexFormat.UInt32 : UnityEngine.Rendering.IndexFormat.UInt16;
+                    m.indexFormat = count > (65535) ? UnityEngine.Rendering.IndexFormat.UInt32 : UnityEngine.Rendering.IndexFormat.UInt16;
 
                     m.vertices = vertices;
                     m.triangles = triangles;
