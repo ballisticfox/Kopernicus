@@ -219,9 +219,9 @@ namespace Kopernicus.OnDemand
             minX = (int)Math.Floor(centerXD);
             maxX = (int)Math.Ceiling(centerXD);
             midX = (float)centerXD - minX;
-            // X wraps around as it is longitude.
+            // X wraps around as it is longitude. (Move to tile based so this shouldn't be true - ballisticfox)
             if (maxX == _width)
-                maxX = 0;
+                maxX = _width - 1;
 
             centerYD = y * _height;
             minY = (int)Math.Floor(centerYD);
