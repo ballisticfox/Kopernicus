@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 using System.Diagnostics.CodeAnalysis;
 using Kopernicus.ConfigParser.Attributes;
 using Kopernicus.ConfigParser.BuiltinTypeParsers;
@@ -14,48 +15,30 @@ namespace Kopernicus.Configuration.ModLoader
     public class VertexHeightCubeMap : ModLoader<PQSMod_VertexHeightCubeMap>
     {
         // The map textures for the planet
-        [ParserTarget("mapXn")]
-        public MapSOParserLarge<MapSO> vertexHeightMapXn
+        [ParserTarget("tilePath")]
+        public StringCollectionParser tilepath
         {
-            get { return Mod.vertexHeightMapXn; }
-            set { Mod.vertexHeightMapXn = value; }
+            get { return Mod.path; }
+            set { Mod.path = value; }
         }
-        [ParserTarget("mapXp")]
-        public MapSOParserLarge<MapSO> vertexHeightMapXp
+
+        [ParserTarget("tileSize")]
+        public NumericParser<int> tilesize
         {
-            get { return Mod.vertexHeightMapXp; }
-            set { Mod.vertexHeightMapXp = value; }
+            get { return Mod.size; }
+            set { Mod.size = value; }
         }
-        [ParserTarget("mapYn")]
-        public MapSOParserLarge<MapSO> vertexHeightMapYn
-        {
-            get { return Mod.vertexHeightMapYn; }
-            set { Mod.vertexHeightMapYn = value; }
-        }
-        [ParserTarget("mapYp")]
-        public MapSOParserLarge<MapSO> vertexHeightMapYp
-        {
-            get { return Mod.vertexHeightMapYp; }
-            set { Mod.vertexHeightMapYp = value; }
-        }
-        [ParserTarget("mapZn")]
-        public MapSOParserLarge<MapSO> vertexHeightMapZn
-        {
-            get { return Mod.vertexHeightMapZn; }
-            set { Mod.vertexHeightMapZn = value; }
-        }
-        [ParserTarget("mapZp")]
-        public MapSOParserLarge<MapSO> vertexHeightMapZp
-        {
-            get { return Mod.vertexHeightMapZp; }
-            set { Mod.vertexHeightMapZp = value; }
-        }
+
         // Height map offset
         [ParserTarget("offset")]
         public NumericParser<Double> heightMapOffset
         {
             get { return Mod.heightMapOffset; }
-            set { Mod.heightMapOffset = value; }
+            set 
+            {
+                Debug.Log("Setting Heightmap offset " + value.Value);
+                Mod.heightMapOffset = value; 
+            }
         }
 
         // Height map offset

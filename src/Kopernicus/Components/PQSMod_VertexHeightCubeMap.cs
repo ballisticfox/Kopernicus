@@ -3,8 +3,10 @@
 * Available from https://github.com/StollD/KopernicusExpansion-Continued
 */
 
+using Kopernicus.OnDemand;
 using System;
 using UnityEngine;
+using System.Collections.Generic;
 
 namespace Kopernicus.Components
 {
@@ -13,12 +15,10 @@ namespace Kopernicus.Components
     /// </summary>
     public class PQSMod_VertexHeightCubeMap : PQSMod_VertexHeightMap
     {
-        public MapSO vertexHeightMapXn;
-        public MapSO vertexHeightMapXp;
-        public MapSO vertexHeightMapYn;
-        public MapSO vertexHeightMapYp;
-        public MapSO vertexHeightMapZn;
-        public MapSO vertexHeightMapZp;
+        private MapSOTileSet vertexHeightTileSet;
+        bool onStart = true;
+        public List<string> path;
+        public int size;
         public double edgeClampRange;
 
 
@@ -102,48 +102,61 @@ namespace Kopernicus.Components
             return uvIndex;
         }
 
-        public MapSO.HeightAlpha GetCubeMapHeight(MapSO texXn, MapSO texXp, MapSO texYn, MapSO texYp, MapSO texZn, MapSO texZp, double u, double v)
+        public MapSO.HeightAlpha GetCubeMapHeight(MapSOTileSet vertexHeightTileSet, double u, double v)
         {
             MapSO.HeightAlpha ha = new MapSO.HeightAlpha();
             Vector3d coords = UVtoXYZ(u, v);
             Vector3d uvIndex = XYZtoFaceUVI(coords);
 
-            double pixelClamp = 1.0d / (texXn.Width / edgeClampRange);
+            //double pixelClamp = 1.0d / (4096 / edgeClampRange);
             //Clamp values near edges to prevent wrapping
-            uvIndex.x = Math.Max(uvIndex.x, pixelClamp);
-            uvIndex.x = Math.Min(uvIndex.x, 1 - pixelClamp);
-            uvIndex.y = Math.Max(uvIndex.y, pixelClamp);
-            uvIndex.y = Math.Min(uvIndex.y, 1 - pixelClamp);
+            //uvIndex.x = Math.Max(uvIndex.x, pixelClamp);
+            //uvIndex.x = Math.Min(uvIndex.x, 1 - pixelClamp);
+            //uvIndex.y = Math.Max(uvIndex.y, pixelClamp);
+            //uvIndex.y = Math.Min(uvIndex.y, 1 - pixelClamp);
 
-            //Xn -> Zn
             if (uvIndex.z == 0)
-                return texZn.GetPixelHeightAlpha((1 - uvIndex.x), (1 - uvIndex.y));
-
+                uvIndex = new Vector3d(1 - uvIndex.x, 1 - uvIndex.y, uvIndex.z);
             if (uvIndex.z == 1)
-                return texZp.GetPixelHeightAlpha((1 - uvIndex.x), (1 - uvIndex.y));
-
+                uvIndex = new Vector3d(1 - uvIndex.x, 1 - uvIndex.y, uvIndex.z);
             if (uvIndex.z == 2)
-                return texYn.GetPixelHeightAlpha((uvIndex.y), (1 - uvIndex.x));
-
+                uvIndex = new Vector3d(uvIndex.y, 1 - uvIndex.x, uvIndex.z);
             if (uvIndex.z == 3)
-                return texYp.GetPixelHeightAlpha((1 - uvIndex.y), (uvIndex.x));
-
+                uvIndex = new Vector3d(1 - uvIndex.y, uvIndex.x, uvIndex.z);
             if (uvIndex.z == 4)
-                return texXn.GetPixelHeightAlpha((1 - uvIndex.x), (1 - uvIndex.y));
-
+                uvIndex = new Vector3d(1 - uvIndex.x, 1 - uvIndex.y, uvIndex.z);
             if (uvIndex.z == 5)
-                return texXp.GetPixelHeightAlpha((1 - uvIndex.x), (1 - uvIndex.y));
+                uvIndex = new Vector3d(1 - uvIndex.x, 1 - uvIndex.y, uvIndex.z);
 
-
-            return ha;
+            Debug.Log("Sampling: " + vertexHeightTileSet.GetTile((int)uvIndex.z, uvIndex.x, uvIndex.y).Path);
+            return vertexHeightTileSet.GetPixelHeightAlpha((int)uvIndex.z, uvIndex.x, uvIndex.y);
         }
+
+
+        public override void OnSetup()
+        {
+            base.OnSetup();
+            Debug.Log("Running setup");
+            if (onStart)
+            {
+                Debug.Log("Creating tileset");
+                if (path == null)
+                {
+                    Debug.Log("Path is null");
+                }
+                Debug.Log(path[0]);
+                Debug.Log(size);
+                vertexHeightTileSet = new MapSOTileSet(path[0], size);
+
+            }
+        }
+
+
         public override void OnVertexBuildHeight(PQS.VertexBuildData data)
         {
             // Get the HeightAlpha, not the Float-Value from the Map
             // Clamp the v value to just shy of 1 to avoid sampling issues around the north pole.
-
-
-            MapSO.HeightAlpha ha = GetCubeMapHeight(vertexHeightMapXn, vertexHeightMapXp, vertexHeightMapYn, vertexHeightMapYp, vertexHeightMapZn, vertexHeightMapZp, data.u, data.v);
+            MapSO.HeightAlpha ha = GetCubeMapHeight(vertexHeightTileSet, data.u, data.v);
 
             // Get the height data from the terrain
             Double height = (ha.height + ha.alpha * (Double)Byte.MaxValue) / (Double)(Byte.MaxValue + 1);
