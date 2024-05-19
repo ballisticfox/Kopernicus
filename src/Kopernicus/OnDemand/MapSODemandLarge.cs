@@ -258,14 +258,16 @@ namespace Kopernicus.OnDemand
                 return 0;
             }
 
-            if (x < 0)
-            {
-                x = Width - x;
-            }
-            else if (x >= Width)
-            {
-                x -= Width;
-            }
+            //if (x < 0)
+            //{
+            //    x = Width - x;
+            //}
+            //else if (x >= Width)
+            //{
+            //    x -= Width;
+            //}
+            x = Math.Max(x, 0);
+            x = Math.Min(x, Height - 1);
 
             y = Math.Max(y, 0);
             y = Math.Min(y, Height - 1);

@@ -5,6 +5,8 @@
 
 using System;
 using UnityEngine;
+using Kopernicus.OnDemand;
+using System.Collections.Generic;
 
 namespace Kopernicus.Components
 {
@@ -13,41 +15,37 @@ namespace Kopernicus.Components
     /// </summary>
     public class PQSMod_VertexColorCubeMap : PQSMod
     {
-
-        public MapSO vertexColorMapXn;
-        public MapSO vertexColorMapXp;
-        public MapSO vertexColorMapYn;
-        public MapSO vertexColorMapYp;
-        public MapSO vertexColorMapZn;
-        public MapSO vertexColorMapZp;
+        public MapSOTileSet vertexColorTileSet;
+        bool onStart = true;
+        public List<string> path;
+        public int size;
         public float edgeClampRange;
-        protected int tileWidth = 1;
         protected float pixelClamp;
 
-        public Vector3 UVtoXYZ(double u, double v)
+        public Vector3d UVtoXYZ(double u, double v)
         {
-            Vector3 coords = new Vector3();
+            Vector3d coords = new Vector3d();
 
             double theta = 2.0 * Math.PI * u;
             double phi = Math.PI * v;
 
-            coords.x = (float)(Math.Cos(theta) * Math.Sin(phi));
-            coords.y = (float)(-Math.Cos(phi));
-            coords.z = (float)(Math.Sin(theta) * Math.Sin(phi));
+            coords.x = Math.Cos(theta) * Math.Sin(phi);
+            coords.y = -Math.Cos(phi);
+            coords.z = Math.Sin(theta) * Math.Sin(phi);
 
             return coords;
         }
-        public Vector3 XYZtoFaceUVI(Vector3 coords)
+        public Vector3d XYZtoFaceUVI(Vector3d coords)
         {
             //X = U, Y = V, Z = FaceIndex 
-            Vector3 uvIndex = new Vector3();
-            Vector3 absCoords = new Vector3(Math.Abs(coords.x), Math.Abs(coords.y), Math.Abs(coords.z));
+            Vector3d uvIndex = new Vector3d();
+            Vector3d absCoords = new Vector3d(Math.Abs(coords.x), Math.Abs(coords.y), Math.Abs(coords.z));
 
             Boolean isXPositive = coords.x > 0 ? true : false;
             Boolean isYPositive = coords.y > 0 ? true : false;
             Boolean isZPositive = coords.z > 0 ? true : false;
 
-            float maxAxis = 1;
+            double maxAxis = 1;
 
             //Negative X
             if (!isXPositive && absCoords.x >= absCoords.y && absCoords.x >= absCoords.z)
@@ -97,18 +95,18 @@ namespace Kopernicus.Components
                 uvIndex.z = 5;
             }
 
-            uvIndex.x = 0.5f * (uvIndex.x / maxAxis + 1.0f);
-            uvIndex.y = 0.5f * (uvIndex.y / maxAxis + 1.0f);
+            uvIndex.x = 0.5 * (uvIndex.x / maxAxis + 1.0);
+            uvIndex.y = 0.5 * (uvIndex.y / maxAxis + 1.0);
 
 
             return uvIndex;
         }
 
-        public Color GetCubeMapColor(MapSO texXn, MapSO texXp, MapSO texYn, MapSO texYp, MapSO texZn, MapSO texZp, double u, double v)
+        public Color GetCubeMapColor(MapSOTileSet vertexColorTileSet, double u, double v)
         {
             Color col = new Color(255, 0, 255);
-            Vector3 coords = UVtoXYZ(u, v);
-            Vector3 uvIndex = XYZtoFaceUVI(coords);
+            Vector3d coords = UVtoXYZ(u, v);
+            Vector3d uvIndex = XYZtoFaceUVI(coords);
 
             //Clamp values near edges to prevent wrapping
 
@@ -120,47 +118,44 @@ namespace Kopernicus.Components
             uvIndex.y = Math.Min(uvIndex.y, 1 - pixelClamp);
 
             if (uvIndex.z == 0)
-                return texZn.GetPixelColor((1 - uvIndex.x), (1 - uvIndex.y));
-
-
+                uvIndex = new Vector3d(1 - uvIndex.x, 1 - uvIndex.y, uvIndex.z);
             if (uvIndex.z == 1)
-                return texZp.GetPixelColor((1 - uvIndex.x), (1 - uvIndex.y));
-
+                uvIndex = new Vector3d(1 - uvIndex.x, 1 - uvIndex.y, uvIndex.z);
             if (uvIndex.z == 2)
-                return texYn.GetPixelColor((uvIndex.y), (1 - uvIndex.x));
-
+                uvIndex = new Vector3d(uvIndex.y, 1 - uvIndex.x, uvIndex.z);
             if (uvIndex.z == 3)
-                return texYp.GetPixelColor((1 - uvIndex.y), (uvIndex.x));
-
+                uvIndex = new Vector3d(1 - uvIndex.y, uvIndex.x, uvIndex.z);
             if (uvIndex.z == 4)
-                return texXn.GetPixelColor((1 - uvIndex.x), (1 - uvIndex.y));
-
+                uvIndex = new Vector3d(1 - uvIndex.x, 1 - uvIndex.y, uvIndex.z);
             if (uvIndex.z == 5)
-                return texXp.GetPixelColor((1 - uvIndex.x), (1 - uvIndex.y));
+                uvIndex = new Vector3d(1 - uvIndex.x, 1 - uvIndex.y, uvIndex.z);
 
-            return col;
-        }
-
-        protected void updateTileWidths()
-        {
-            int maxWidthX = Math.Max(vertexColorMapXn.Width, vertexColorMapXp.Width);
-            int maxWidthY = Math.Max(vertexColorMapYn.Width, vertexColorMapYp.Width);
-            int maxWidthZ = Math.Max(vertexColorMapZn.Width, vertexColorMapZp.Width);
-            int maxWidth = Math.Max(Math.Max(maxWidthX, maxWidthY), maxWidthZ);
-
-            tileWidth = Math.Max(maxWidth, tileWidth);
-            pixelClamp = 1.0f / (tileWidth / edgeClampRange);
+            return vertexColorTileSet.GetPixelColor((int)uvIndex.z, uvIndex.x, uvIndex.y);
         }
 
 
         public override void OnSetup()
         {
-            base.requirements = PQS.ModiferRequirements.MeshColorChannel;
-            updateTileWidths();
+            base.OnSetup();
+            Debug.Log("Running setup");
+            if (onStart)
+            {
+                onStart = false;
+                Debug.Log("Creating tileset");
+                if (path == null)
+                {
+                    Debug.Log("Path is null");
+                }
+                Debug.Log(path[0]);
+                Debug.Log(size);
+                vertexColorTileSet = new MapSOTileSet(path[0], size);
+
+            }
         }
+
         public override void OnVertexBuildHeight(PQS.VertexBuildData data)
         {
-            data.vertColor = GetCubeMapColor(vertexColorMapXn, vertexColorMapXp, vertexColorMapYn, vertexColorMapYp, vertexColorMapZn, vertexColorMapZp, (data.u), (data.v));
+            data.vertColor = GetCubeMapColor(vertexColorTileSet, data.u, data.v);
         }
     }
 }

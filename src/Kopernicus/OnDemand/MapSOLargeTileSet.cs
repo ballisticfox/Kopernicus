@@ -1,17 +1,11 @@
 ﻿using System;
-
-using Kopernicus.ConfigParser.Attributes;
-using Kopernicus.ConfigParser.Enumerations;
-using Kopernicus.ConfigParser.Interfaces;
-using Kopernicus.Components;
 using UnityEngine;
-using Kopernicus.Configuration.Parsing;
-using Kopernicus.ConfigParser.BuiltinTypeParsers;
+
 
 namespace Kopernicus.OnDemand
 
 {
-    public class MapSOTileSet
+    public class MapSOLargeTileSet
     {
         public string tileSetPath { get; private set; }
         public int tileSetSize { get; private set; }
@@ -19,9 +13,9 @@ namespace Kopernicus.OnDemand
         private int tileSetLength;
 
 
-        MapSODemand[] tileSet;
-
-        public MapSOTileSet(string path, int size)
+        MapSODemandLarge[] tileSet;
+        
+        public MapSOLargeTileSet(string path, int size)
         {
 
             /* TILE ORDER
@@ -39,48 +33,46 @@ namespace Kopernicus.OnDemand
             tileSetSize = size;
             tileSetLength = (size * size * 6);
             tileSetExtension = ".dds";//extension;
-            tileSet = new MapSODemand[tileSetLength];
+            tileSet = new MapSODemandLarge[tileSetLength];
             for (int index = 0; index < tileSetLength; index++)
             {
                 int X = index % size;
                 int Y = (int)(Math.Floor((double)index / size) % size);
                 int F = (int)(Math.Floor((double)index / (size * size)));
 
-                tileSet[index] = ScriptableObject.CreateInstance<MapSODemand>();
+                tileSet[index] = ScriptableObject.CreateInstance<MapSODemandLarge>();
                 Debug.Log(tileSetPath + "_" + F + "-" + Y + "-" + X + tileSetExtension);
-                tileSet[index].Depth = MapSO.MapDepth.RGB;
                 tileSet[index].Path = tileSetPath + "_" + F + "-" + Y + "-" + X + tileSetExtension;
                 tileSet[index].AutoLoad = OnDemandStorage.OnDemandLoadOnMissing;
             }
         }
 
 
-        public MapSODemand GetTile(int face, double x, double y)
+        public MapSODemandLarge GetTile(int face, double x, double y)
         {
             x = Math.Min(x, 0.99999);
             y = Math.Min(y, 0.99999);
 
-                
             int a = face * tileSetSize * tileSetSize;
             int b = (int)(Math.Floor(tileSetSize * y) * tileSetSize);
             int c = (int)(Math.Floor(tileSetSize * x));
             int tileIndex = a + b + c;
 
-            //Debug.Log($"Face: {face}, X: {x} Y: {y} -> A: {a}, B: {b}, C:{c}.\n Index: {tileIndex}");
             if (tileIndex == tileSetLength)
                 tileIndex -= 1;
+
             return tileSet[tileIndex];
         }
 
-        public Color GetPixelColor(int face, double x, double y)
+        public MapSO.HeightAlpha GetPixelHeightAlpha(int face, double x, double y)
         {
-            MapSODemand tile = GetTile(face, x, y);
+            MapSODemandLarge tile = GetTile(face, x, y);
 
             double newX = (tileSetSize * x) - Math.Floor(tileSetSize * x);
             double newY = (tileSetSize * y) - Math.Floor(tileSetSize * y);
 
             tile.Load();
-            return tile.GetPixelColor(newX, newY);
+            return tile.GetPixelHeightAlpha(newX, newY);
         }
     }
 }
