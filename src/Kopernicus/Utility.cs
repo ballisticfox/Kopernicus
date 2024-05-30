@@ -153,6 +153,12 @@ namespace Kopernicus
             }
             return false;
         }
+
+        /// <summary>
+        /// Get a reference to the CelestialBody instance from a PQS instance
+        /// </summary>
+        public static CelestialBody GetCelestialBody(this PQS sphere) => sphere.PQSModCBTransform?.body;
+
         /// <summary>
         /// Copy one objects fields to another object via reflection
         /// </summary>
@@ -1513,6 +1519,14 @@ namespace Kopernicus
                 return null;
 
             return unityObject;
+        }
+
+        public static void DestroyComponent<T>(this GameObject gameObject) where T : Component
+        {
+            if (gameObject.TryGetComponent<T>(out var component))
+            {
+                Component.Destroy(component);
+            }
         }
     }
 #pragma warning restore IDE0041 // Use 'is null' check

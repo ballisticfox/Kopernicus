@@ -1,15 +1,17 @@
 Kopernicus
 ==============================
-January 2nd, 2024
+May 25th, 2024
 * Created by: BryceSchroeder and Nathaniel R. Lewis (Teknoman117)
 * Actively maintained by: Prestja and R-T-B.
 * Formerly maintained by: Thomas P., NathanKell and KillAshley
 * Additional Content by: Democat3457, Gravitasi, aftokino, KCreator, Padishar, Kragrathea, OvenProofMars, zengei, MrHappyFace, Sigma88, Majiir (CompatibilityChecker), blackrack/LGHassen (shaders/GPL'd scatterer code)
 * Much thanks to Sarbian for ModuleManager and ModularFlightIntegrator
 
-New in this latest version release-197:
+New in this latest version release-202:
 
-1.) We have added fallback behavior for proper loading if a planet pack doesn't like the new UseHomeWorld option, or is not updated for it, in particular cbNameLater users (Sorry about that RSS users).
+1.) Fix a regression that caused leprochan valley JNSQ and bright colors in other planet packs (caused by createColors = false not being applied).
+
+2.) Better error message if an orbit icon fails to be applied.
 
 About
 -----
