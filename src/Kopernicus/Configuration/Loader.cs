@@ -202,6 +202,7 @@ namespace Kopernicus.Configuration
             // Load the ring shader
             ShaderLoader.LoadAssetBundle("Kopernicus/Shaders", "kopernicusshaders");
             ShaderLoader.LoadAssetBundle("Kopernicus/Shaders", "scaledmesh2");
+            ShaderLoader.LoadAssetBundle("Kopernicus/Shaders", "hapke");
 
             // Event
             Events.OnLoaderApply.Fire(this, node);

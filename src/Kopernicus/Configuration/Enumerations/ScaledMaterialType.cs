@@ -30,6 +30,7 @@ namespace Kopernicus.Configuration.Enumerations
     {
         Vacuum,
         Vacuum2,
+        HapkeCubeMapped,
         Atmospheric,
         AtmosphericStandard,
         Star,
