@@ -9,13 +9,13 @@ namespace Kopernicus.Components.MaterialWrapper
     [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
     [SuppressMessage("ReSharper", "AutoPropertyCanBeMadeGetOnly.Local")]
     [SuppressMessage("ReSharper", "MemberCanBeProtected.Global")]
-    public class HapkeCubeMapped : Material
+    public class Hapke : Material
     {
         // Internal property ID tracking object
         protected class Properties
         {
             // Return the shader for this wrapper
-            private const String SHADER_NAME = "Terrain/HapkeCubeMapped";
+            private const String SHADER_NAME = "Terrain/Hapke";
 
 
             //This is going to spam the log but I don't know how else to do it
@@ -34,44 +34,16 @@ namespace Kopernicus.Components.MaterialWrapper
 
             ///
             // Cubemap mainTex, default is "white"
-            public const String MAIN_TEX_Xn_KEY = "_MainTex_Xn";
-            public Int32 MainTex_XnId { get; private set; }
+            public const String MAIN_TEX_KEY = "_MainTex";
+            public Int32 MainTex_Id { get; private set; }
 
-            public const String MAIN_TEX_Xp_KEY = "_MainTex_Xp";
-            public Int32 MainTex_XpId { get; private set; }
-
-            public const String MAIN_TEX_Yn_KEY = "_MainTex_Yn";
-            public Int32 MainTex_YnId { get; private set; }
-
-            public const String MAIN_TEX_Yp_KEY = "_MainTex_Yp";
-            public Int32 MainTex_YpId { get; private set; }
-
-            public const String MAIN_TEX_Zn_KEY = "_MainTex_Zn";
-            public Int32 MainTex_ZnId { get; private set; }
-
-            public const String MAIN_TEX_Zp_KEY = "_MainTex_Zp";
-            public Int32 MainTex_ZpId { get; private set; }
-            ///
 
 
             // Cubemap Normal map, default = "bump" { }
-            public const String BUMP_MAP_Xn_KEY = "_BumpMap_Xn";
-            public Int32 BumpMap_XnId { get; private set; }
+            public const String BUMP_MAP_KEY = "_NormalTex";
+            public Int32 BumpMap_Id { get; private set; }
 
-            public const String BUMP_MAP_Xp_KEY = "_BumpMap_Xp";
-            public Int32 BumpMap_XpId { get; private set; }
 
-            public const String BUMP_MAP_Yn_KEY = "_BumpMap_Yn";
-            public Int32 BumpMap_YnId { get; private set; }
-
-            public const String BUMP_MAP_Yp_KEY = "_BumpMap_Yp";
-            public Int32 BumpMap_YpId { get; private set; }
-
-            public const String BUMP_MAP_Zn_KEY = "_BumpMap_Zn";
-            public Int32 BumpMap_ZnId { get; private set; }
-
-            public const String BUMP_MAP_Zp_KEY = "_BumpMap_Zp";
-            public Int32 BumpMap_ZpId { get; private set; }
 
             //Bump Map Intensity
             public const String BUMP_SCALE_KEY = "_BumpScale";
@@ -129,20 +101,9 @@ namespace Kopernicus.Components.MaterialWrapper
 
             private Properties()
             {
-                TintId       = Shader.PropertyToID(TINT_KEY);
-                MainTex_XnId = Shader.PropertyToID(MAIN_TEX_Xn_KEY);
-                MainTex_XpId = Shader.PropertyToID(MAIN_TEX_Xp_KEY);
-                MainTex_YnId = Shader.PropertyToID(MAIN_TEX_Yn_KEY);
-                MainTex_YpId = Shader.PropertyToID(MAIN_TEX_Yp_KEY);
-                MainTex_ZnId = Shader.PropertyToID(MAIN_TEX_Zn_KEY);
-                MainTex_ZpId = Shader.PropertyToID(MAIN_TEX_Zp_KEY);
-
-                BumpMap_XnId = Shader.PropertyToID(BUMP_MAP_Xn_KEY);
-                BumpMap_XpId = Shader.PropertyToID(BUMP_MAP_Xp_KEY);
-                BumpMap_YnId = Shader.PropertyToID(BUMP_MAP_Yn_KEY);
-                BumpMap_YpId = Shader.PropertyToID(BUMP_MAP_Yp_KEY);
-                BumpMap_ZnId = Shader.PropertyToID(BUMP_MAP_Zn_KEY);
-                BumpMap_ZpId = Shader.PropertyToID(BUMP_MAP_Zp_KEY);
+                TintId = Shader.PropertyToID(TINT_KEY);
+                MainTex_Id = Shader.PropertyToID(MAIN_TEX_KEY);
+                BumpMap_Id = Shader.PropertyToID(BUMP_MAP_KEY);
 
                 BumpScaleId = Shader.PropertyToID(BUMP_SCALE_KEY);
 
@@ -229,90 +190,34 @@ namespace Kopernicus.Components.MaterialWrapper
             set { SetTexture(Properties.Instance.SurgeTexId, value); }
         }
 
-        public Texture2D MainTex_Xn
+        public Texture2D MainTex
         {
-            get { return GetTexture(Properties.Instance.MainTex_XnId) as Texture2D; }
-            set { SetTexture(Properties.Instance.MainTex_XnId, value); }
-        }
-        public Texture2D MainTex_Xp
-        {
-            get { return GetTexture(Properties.Instance.MainTex_XpId) as Texture2D; }
-            set { SetTexture(Properties.Instance.MainTex_XpId, value); }
+            get { return GetTexture(Properties.Instance.MainTex_Id) as Texture2D; }
+            set { SetTexture(Properties.Instance.MainTex_Id, value); }
         }
 
-        public Texture2D MainTex_Yn
+        public Texture2D BumpMap
         {
-            get { return GetTexture(Properties.Instance.MainTex_YnId) as Texture2D; }
-            set { SetTexture(Properties.Instance.MainTex_YnId, value); }
-        }
-        public Texture2D MainTex_Yp
-        {
-            get { return GetTexture(Properties.Instance.MainTex_YpId) as Texture2D; }
-            set { SetTexture(Properties.Instance.MainTex_YpId, value); }
+            get { return GetTexture(Properties.Instance.BumpMap_Id) as Texture2D; }
+            set { SetTexture(Properties.Instance.BumpMap_Id, value); }
         }
 
-        public Texture2D MainTex_Zn
-        {
-            get { return GetTexture(Properties.Instance.MainTex_ZnId) as Texture2D; }
-            set { SetTexture(Properties.Instance.MainTex_ZnId, value); }
-        }
-        public Texture2D MainTex_Zp
-        {
-            get { return GetTexture(Properties.Instance.MainTex_ZpId) as Texture2D; }
-            set { SetTexture(Properties.Instance.MainTex_ZpId, value); }
-        }
-
-        public Texture2D BumpMap_Xn
-        {
-            get { return GetTexture(Properties.Instance.BumpMap_XnId) as Texture2D; }
-            set { SetTexture(Properties.Instance.BumpMap_XnId, value); }
-        }
-        public Texture2D BumpMap_Xp
-        {
-            get { return GetTexture(Properties.Instance.BumpMap_XpId) as Texture2D; }
-            set { SetTexture(Properties.Instance.BumpMap_XpId, value); }
-        }
-
-        public Texture2D BumpMap_Yn
-        {
-            get { return GetTexture(Properties.Instance.BumpMap_YnId) as Texture2D; }
-            set { SetTexture(Properties.Instance.BumpMap_YnId, value); }
-        }
-        public Texture2D BumpMap_Yp
-        {
-            get { return GetTexture(Properties.Instance.BumpMap_YpId) as Texture2D; }
-            set { SetTexture(Properties.Instance.BumpMap_YpId, value); }
-        }
-
-        public Texture2D BumpMap_Zn
-        {
-            get { return GetTexture(Properties.Instance.BumpMap_ZnId) as Texture2D; }
-            set { SetTexture(Properties.Instance.BumpMap_ZnId, value); }
-        }
-        public Texture2D BumpMap_Zp
-        {
-            get { return GetTexture(Properties.Instance.BumpMap_ZpId) as Texture2D; }
-            set { SetTexture(Properties.Instance.BumpMap_ZpId, value); }
-        }
-
-
-
-        public HapkeCubeMapped() : base(Properties.Shader)
+        public Hapke() : base(Properties.Shader)
         {
         }
 
         [Obsolete("Creating materials from shader source String is no longer supported. Use Shader assets instead.")]
-        public HapkeCubeMapped(String contents) : base(contents)
+        public Hapke(String contents) : base(contents)
         {
             shader = Properties.Shader;
         }
 
-        public HapkeCubeMapped(Material material) : base(material)
+        public Hapke(Material material) : base(material)
         {
             // Throw exception if this material was not the proper material
             if (material.shader.name != Properties.Shader.name)
             {
-                throw new InvalidOperationException("Type Mismatch: Terrain/HapkeCubemapped shader required");
+                throw new InvalidOperationException("Type Mismatch: Terrain/Hapke shader required");
             }
         }
 

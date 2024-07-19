@@ -153,12 +153,14 @@
   </ItemGroup>
   <!--Source-->
   <ItemGroup>
+    <Compile Include="Components\MaterialWrapper\Hapke.cs" />
     <Compile Include="Components\MaterialWrapper\HapkeCubeMapped.cs" />
     <Compile Include="Components\MaterialWrapper\ScaledPlanetSimple2.cs" />
     <Compile Include="Components\KopernicusCBAttributeMapSO.cs" />
     <Compile Include="Components\ModularScatter\PQSMod_KopernicusLandClassScatterQuad.cs" />
     <Compile Include="Components\PQSLandControlFixer.cs" />
     <Compile Include="Configuration\MaterialLoader\HapkeCubeMappedLoader.cs" />
+    <Compile Include="Configuration\MaterialLoader\HapkeLoader.cs" />
     <Compile Include="RuntimeUtility\PreciseFloatingOrigin.cs" />
     <Compile Include="Components\PQSMod_VertexColorCubeMap.cs" />
     <Compile Include="Components\PQSMod_VertexHeightCubeMap.cs" />

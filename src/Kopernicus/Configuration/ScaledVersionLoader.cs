@@ -90,6 +90,10 @@ namespace Kopernicus.Configuration
                 {
                     return ScaledMaterialType.Vacuum2;
                 }
+                if (Hapke.UsesSameShader(material))
+                {
+                    return ScaledMaterialType.Hapke;
+                }
                 if (HapkeCubeMapped.UsesSameShader(material))
                 {
                     return ScaledMaterialType.HapkeCubeMapped;
@@ -121,6 +125,7 @@ namespace Kopernicus.Configuration
 
                 Boolean isVaccum = ScaledPlanetSimple.UsesSameShader(renderer.sharedMaterial);
                 Boolean isVacuum2 = ScaledPlanetSimple2.UsesSameShader(renderer.sharedMaterial);
+                Boolean isHapke = Hapke.UsesSameShader(renderer.sharedMaterial);
                 Boolean isHapkeCubeMapped = HapkeCubeMapped.UsesSameShader(renderer.sharedMaterial);
                 Boolean isAtmospheric = ScaledPlanetRimAerial.UsesSameShader(renderer.sharedMaterial);
                 Boolean isAtmosphericStandard = false;
@@ -138,6 +143,9 @@ namespace Kopernicus.Configuration
                             break;
                         case ScaledMaterialType.Vacuum2 when !isVacuum2:
                             renderer.sharedMaterial = new ScaledPlanetSimple2Loader();
+                            break;
+                        case ScaledMaterialType.Hapke when !isHapke:
+                            renderer.sharedMaterial = new HapkeLoader();
                             break;
                         case ScaledMaterialType.HapkeCubeMapped when !isHapkeCubeMapped:
                             renderer.sharedMaterial = new HapkeCubeMappedLoader();
@@ -164,6 +172,9 @@ namespace Kopernicus.Configuration
                             break;
                         case ScaledMaterialType.Vacuum2 when !isVacuum2:
                             renderer.sharedMaterial = new ScaledPlanetSimple2Loader();
+                            break;
+                        case ScaledMaterialType.Hapke when !isHapke:
+                            renderer.sharedMaterial = new HapkeLoader();
                             break;
                         case ScaledMaterialType.HapkeCubeMapped when !isHapkeCubeMapped:
                             renderer.sharedMaterial = new HapkeCubeMappedLoader();
@@ -299,6 +310,8 @@ namespace Kopernicus.Configuration
 
                 Boolean isVaccum = renderer.sharedMaterial is ScaledPlanetSimpleLoader;
                 Boolean isVacuum2 = renderer.sharedMaterial is ScaledPlanetSimple2Loader;
+
+                Boolean isHapke = renderer.sharedMaterial is HapkeLoader;
                 Boolean isHapkeCubeMapped = renderer.sharedMaterial is HapkeCubeMappedLoader;
                 Boolean isAtmospheric = renderer.sharedMaterial is ScaledPlanetRimAerialLoader;
                 Boolean isAtmosphericStandard = false;
@@ -316,6 +329,9 @@ namespace Kopernicus.Configuration
                             goto default;
                         case ScaledMaterialType.Vacuum2 when !isVacuum2:
                             renderer.sharedMaterial = new ScaledPlanetSimple2Loader(renderer.sharedMaterial);
+                            goto default;
+                        case ScaledMaterialType.Hapke when !isHapke:
+                            renderer.sharedMaterial = new HapkeLoader(renderer.sharedMaterial);
                             goto default;
                         case ScaledMaterialType.HapkeCubeMapped when !isHapkeCubeMapped:
                             renderer.sharedMaterial = new HapkeCubeMappedLoader(renderer.sharedMaterial);
@@ -343,6 +359,9 @@ namespace Kopernicus.Configuration
                         case ScaledMaterialType.Vacuum2 when !isVacuum2:
                             renderer.sharedMaterial = new ScaledPlanetSimple2Loader(renderer.sharedMaterial);
                             goto default;
+                        case ScaledMaterialType.Hapke when !isHapke:
+                            renderer.sharedMaterial = new HapkeLoader(renderer.sharedMaterial);
+                            goto default;
                         case ScaledMaterialType.HapkeCubeMapped when !isHapkeCubeMapped:
                             renderer.sharedMaterial = new HapkeCubeMappedLoader(renderer.sharedMaterial);
                             goto default;
@@ -363,6 +382,7 @@ namespace Kopernicus.Configuration
 
                 Boolean isVaccum = value is ScaledPlanetSimpleLoader;
                 Boolean isVacuum2 = value is ScaledPlanetSimple2Loader;
+                Boolean isHapke = value is HapkeLoader;
                 Boolean isHapkeCubeMapped = value is HapkeCubeMappedLoader;
                 Boolean isAtmospheric = value is ScaledPlanetRimAerialLoader;
                 Boolean isAtmosphericStandard = false;
@@ -380,6 +400,9 @@ namespace Kopernicus.Configuration
                             break;
                         case ScaledMaterialType.Vacuum2 when !isVacuum2:
                             renderer.sharedMaterial = new ScaledPlanetSimple2Loader(value);
+                            break;
+                        case ScaledMaterialType.Hapke when !isHapke:
+                            renderer.sharedMaterial = new HapkeLoader(value);
                             break;
                         case ScaledMaterialType.HapkeCubeMapped when !isHapkeCubeMapped:
                             renderer.sharedMaterial = new HapkeCubeMappedLoader(value);
@@ -407,6 +430,9 @@ namespace Kopernicus.Configuration
                             break;
                         case ScaledMaterialType.Vacuum2 when !isVacuum2:
                             renderer.sharedMaterial = new ScaledPlanetSimple2Loader(value);
+                            break;
+                        case ScaledMaterialType.Hapke when !isHapke:
+                            renderer.sharedMaterial = new HapkeLoader(value);
                             break;
                         case ScaledMaterialType.HapkeCubeMapped when !isHapkeCubeMapped:
                             renderer.sharedMaterial = new HapkeCubeMappedLoader(value);
