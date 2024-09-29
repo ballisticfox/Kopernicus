@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Kopernicus Planetary System Modifier
  * -------------------------------------------------------------
  * This library is free software; you can redistribute it and/or
@@ -29,6 +29,7 @@ namespace Kopernicus.Configuration.Enumerations
     public enum ScaledMaterialType
     {
         Vacuum,
+        Hapke,
         Atmospheric,
         AtmosphericStandard,
         Star,

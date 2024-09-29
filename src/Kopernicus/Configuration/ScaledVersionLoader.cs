@@ -97,6 +97,10 @@ namespace Kopernicus.Configuration
                         return ScaledMaterialType.AtmosphericStandard;
                     }
                 }
+                if (ScaledPlanetHapke.UsesSameShader(material))
+                {
+                    return ScaledMaterialType.Hapke;
+                }
                 if (EmissiveMultiRampSunspots.UsesSameShader(material))
                 {
                     return ScaledMaterialType.Star;
@@ -114,6 +118,7 @@ namespace Kopernicus.Configuration
                 Boolean isVaccum = ScaledPlanetSimple.UsesSameShader(renderer.sharedMaterial);
                 Boolean isAtmospheric = ScaledPlanetRimAerial.UsesSameShader(renderer.sharedMaterial);
                 Boolean isAtmosphericStandard = false;
+                Boolean isHapke = ScaledPlanetHapke.UsesSameShader(renderer.sharedMaterial);
                 if (!(Versioning.version_minor < 9))
                 {
                     isAtmosphericStandard = ScaledPlanetRimAerialStandard.UsesSameShader(renderer.sharedMaterial);
@@ -132,6 +137,9 @@ namespace Kopernicus.Configuration
                         case ScaledMaterialType.AtmosphericStandard when !isAtmosphericStandard:
                             renderer.sharedMaterial = new ScaledPlanetRimAerialStandardLoader();
                             break;
+                        case ScaledMaterialType.Hapke when !isHapke:
+                            renderer.sharedMaterial = new ScaledPlanetHapkeLoader();
+                            break;
                         case ScaledMaterialType.Star when !isStar:
                             renderer.sharedMaterial = new EmissiveMultiRampSunspotsLoader();
                             break;
@@ -148,6 +156,9 @@ namespace Kopernicus.Configuration
                             break;
                         case ScaledMaterialType.Atmospheric when !isAtmospheric:
                             renderer.sharedMaterial = new ScaledPlanetRimAerialLoader();
+                            break;
+                        case ScaledMaterialType.Hapke when !isHapke:
+                            renderer.sharedMaterial = new ScaledPlanetHapkeLoader();
                             break;
                         case ScaledMaterialType.Star when !isStar:
                             renderer.sharedMaterial = new EmissiveMultiRampSunspotsLoader();
@@ -278,6 +289,7 @@ namespace Kopernicus.Configuration
                 Boolean isVaccum = renderer.sharedMaterial is ScaledPlanetSimpleLoader;
                 Boolean isAtmospheric = renderer.sharedMaterial is ScaledPlanetRimAerialLoader;
                 Boolean isAtmosphericStandard = false;
+                Boolean isHapke = renderer.sharedMaterial is ScaledPlanetHapkeLoader;
                 if (!(Versioning.version_minor < 9))
                 {
                     isAtmosphericStandard = renderer.sharedMaterial is ScaledPlanetRimAerialStandardLoader;
@@ -296,6 +308,9 @@ namespace Kopernicus.Configuration
                         case ScaledMaterialType.AtmosphericStandard when !isAtmosphericStandard:
                             renderer.sharedMaterial = new ScaledPlanetRimAerialStandardLoader(renderer.sharedMaterial);
                             goto default;
+                        case ScaledMaterialType.Hapke when !isHapke:
+                            renderer.sharedMaterial = new ScaledPlanetHapkeLoader(renderer.sharedMaterial);
+                            goto default;
                         case ScaledMaterialType.Star when !isStar:
                             renderer.sharedMaterial = new EmissiveMultiRampSunspotsLoader(renderer.sharedMaterial);
                             goto default;
@@ -312,6 +327,9 @@ namespace Kopernicus.Configuration
                             goto default;
                         case ScaledMaterialType.Atmospheric when !isAtmospheric:
                             renderer.sharedMaterial = new ScaledPlanetRimAerialLoader(renderer.sharedMaterial);
+                            goto default;
+                        case ScaledMaterialType.Hapke when !isHapke:
+                            renderer.sharedMaterial = new ScaledPlanetHapkeLoader(renderer.sharedMaterial);
                             goto default;
                         case ScaledMaterialType.Star when !isStar:
                             renderer.sharedMaterial = new EmissiveMultiRampSunspotsLoader(renderer.sharedMaterial);
@@ -332,6 +350,7 @@ namespace Kopernicus.Configuration
                 {
                     isAtmosphericStandard = value is ScaledPlanetRimAerialStandardLoader;
                 }
+                Boolean isHapke = value is ScaledPlanetHapkeLoader;
                 Boolean isStar = value is EmissiveMultiRampSunspotsLoader;
                 if (!(Versioning.version_minor < 9))
                 {
@@ -345,6 +364,9 @@ namespace Kopernicus.Configuration
                             break;
                         case ScaledMaterialType.AtmosphericStandard when !isAtmosphericStandard:
                             renderer.sharedMaterial = new ScaledPlanetRimAerialStandardLoader(value);
+                            break;
+                        case ScaledMaterialType.Hapke when !isHapke:
+                            renderer.sharedMaterial = new ScaledPlanetHapkeLoader(value);
                             break;
                         case ScaledMaterialType.Star when !isStar:
                             renderer.sharedMaterial = new EmissiveMultiRampSunspotsLoader(value);
@@ -363,6 +385,9 @@ namespace Kopernicus.Configuration
                             break;
                         case ScaledMaterialType.Atmospheric when !isAtmospheric:
                             renderer.sharedMaterial = new ScaledPlanetRimAerialLoader(value);
+                            break;
+                        case ScaledMaterialType.Hapke when !isHapke:
+                            renderer.sharedMaterial = new ScaledPlanetHapkeLoader(value);
                             break;
                         case ScaledMaterialType.Star when !isStar:
                             renderer.sharedMaterial = new EmissiveMultiRampSunspotsLoader(value);
