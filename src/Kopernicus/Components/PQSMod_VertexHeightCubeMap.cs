@@ -7,6 +7,7 @@ using Kopernicus.OnDemand;
 using System;
 using UnityEngine;
 using System.Collections.Generic;
+using static Kopernicus.ConfigParser.ParserOptions;
 
 namespace Kopernicus.Components
 {
@@ -63,22 +64,6 @@ namespace Kopernicus.Components
                 uvIndex.y = coords.y;
                 uvIndex.z = 1;
             }
-            //Negative Y
-            if (!isYPositive && absCoords.y >= absCoords.x && absCoords.y >= absCoords.z)
-            {
-                maxAxis = absCoords.y;
-                uvIndex.x = coords.x;
-                uvIndex.y = coords.z;
-                uvIndex.z = 2;
-            }
-            //Positive Y
-            if (isYPositive && absCoords.y >= absCoords.x && absCoords.y >= absCoords.z)
-            {
-                maxAxis = absCoords.y;
-                uvIndex.x = coords.x;
-                uvIndex.y = -coords.z;
-                uvIndex.z = 3;
-            }
             //Negative Z
             if (!isZPositive && absCoords.z >= absCoords.x && absCoords.z >= absCoords.y)
             {
@@ -87,6 +72,7 @@ namespace Kopernicus.Components
                 uvIndex.y = coords.y;
                 uvIndex.z = 4;
             }
+            //Positive Z
             if (isZPositive && absCoords.z >= absCoords.x && absCoords.z >= absCoords.y)
             {
                 maxAxis = absCoords.z;
@@ -94,14 +80,30 @@ namespace Kopernicus.Components
                 uvIndex.y = coords.y;
                 uvIndex.z = 5;
             }
+            //Negative Y
+            if (!isYPositive && absCoords.y > absCoords.x && absCoords.y > absCoords.z)
+            {
+                maxAxis = absCoords.y;
+                uvIndex.x = coords.x;
+                uvIndex.y = coords.z;
+                uvIndex.z = 2;
+            }
+            //Positive Y
+            if (isYPositive && absCoords.y > absCoords.x && absCoords.y > absCoords.z)
+            {
+                maxAxis = absCoords.y;
+                uvIndex.x = coords.x;
+                uvIndex.y = -coords.z;
+                uvIndex.z = 3;
+            }
 
-            uvIndex.x = 0.5f * (uvIndex.x / maxAxis + 1.0f);
-            uvIndex.y = 0.5f * (uvIndex.y / maxAxis + 1.0f);
+            uvIndex.x = 0.5d * (uvIndex.x / maxAxis + 1.0d);
+            uvIndex.y = 0.5d * (uvIndex.y / maxAxis + 1.0d);
 
 
             return uvIndex;
         }
-
+        
         public MapSO.HeightAlpha GetCubeMapHeight(MapSOLargeTileSet vertexHeightTileSet, double u, double v)
         {
             MapSO.HeightAlpha ha = new MapSO.HeightAlpha();
@@ -127,6 +129,12 @@ namespace Kopernicus.Components
                 uvIndex = new Vector3d(1 - uvIndex.x, 1 - uvIndex.y, uvIndex.z);
             if (uvIndex.z == 5)
                 uvIndex = new Vector3d(1 - uvIndex.x, 1 - uvIndex.y, uvIndex.z);
+
+            MapSO.HeightAlpha ha2 = vertexHeightTileSet.GetPixelHeightAlpha((int)uvIndex.z, uvIndex.x, uvIndex.y);
+            Double height = heightMapOffset + heightMapDeformity * (ha2.height + ha2.alpha * (Double)Byte.MaxValue) / (Double)(Byte.MaxValue + 1);
+
+
+            //Debug.Log($"Sampling {u}, {v}: UVF: {uvIndex.x}, {uvIndex.y}, on face {uvIndex.z}, height: {height}");
             return vertexHeightTileSet.GetPixelHeightAlpha((int)uvIndex.z, uvIndex.x, uvIndex.y);
         }
 

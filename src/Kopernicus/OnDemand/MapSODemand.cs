@@ -252,6 +252,26 @@ namespace Kopernicus.OnDemand
                 Image[i * 3 + 3] = pixels32[i].a;
             }
         }
+        public override void ConstructBilinearCoords(double x, double y)
+        {
+            x = Math.Min(x, 0.99999);
+            y = Math.Min(y, 0.99999);
+            centerXD = x * _width;
+            minX = (int)Math.Floor(centerXD);
+            maxX = (int)Math.Ceiling(centerXD);
+            midX = (float)centerXD - minX;
+            // X wraps around as it is longitude. (Move to tile based so this shouldn't be true - ballisticfox)
+            if (maxX == _width)
+                maxX = _width - 1;
+
+            centerYD = y * _height;
+            minY = (int)Math.Floor(centerYD);
+            maxY = (int)Math.Ceiling(centerYD);
+            midY = (float)centerYD - minY;
+            // Y clamps as it is latitude and the poles don't wrap to each other.
+            if (maxY == _height)
+                maxY = _height - 1;
+        }
 
         // GetPixelByte
         public override Byte GetPixelByte(Int32 x, Int32 y)

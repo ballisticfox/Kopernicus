@@ -213,8 +213,8 @@ namespace Kopernicus.OnDemand
 
         public override void ConstructBilinearCoords(double x, double y)
         {
-            x = Math.Abs(x - Math.Floor(x));
-            y = Math.Abs(y - Math.Floor(y));
+            x = Math.Min(x, 0.99999);
+            y = Math.Min(y, 0.99999);
             centerXD = x * _width;
             minX = (int)Math.Floor(centerXD);
             maxX = (int)Math.Ceiling(centerXD);

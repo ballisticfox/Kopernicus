@@ -50,16 +50,18 @@ namespace Kopernicus.OnDemand
 
         public MapSODemandLarge GetTile(int face, double x, double y)
         {
-            x = Math.Min(x, 0.99999);
-            y = Math.Min(y, 0.99999);
-
             int a = face * tileSetSize * tileSetSize;
-            int b = (int)(Math.Floor(tileSetSize * y) * tileSetSize);
-            int c = (int)(Math.Floor(tileSetSize * x));
-            int tileIndex = a + b + c;
 
-            if (tileIndex == tileSetLength)
-                tileIndex -= 1;
+            int b = (int)(Math.Floor(tileSetSize * y) * tileSetSize);
+
+            if (b == tileSetSize * tileSetSize)
+                b -= tileSetSize;
+
+            int c = (int)(Math.Floor(tileSetSize * x));
+            if (c == tileSetSize)
+                c -= 1;
+
+            int tileIndex = a + b + c;
 
             return tileSet[tileIndex];
         }
