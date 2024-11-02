@@ -1,17 +1,15 @@
 Kopernicus
 ==============================
-May 25th, 2024
+August 29th, 2024
 * Created by: BryceSchroeder and Nathaniel R. Lewis (Teknoman117)
 * Actively maintained by: Prestja and R-T-B.
 * Formerly maintained by: Thomas P., NathanKell and KillAshley
 * Additional Content by: Democat3457, Gravitasi, aftokino, KCreator, Padishar, Kragrathea, OvenProofMars, zengei, MrHappyFace, Sigma88, Majiir (CompatibilityChecker), blackrack/LGHassen (shaders/GPL'd scatterer code)
 * Much thanks to Sarbian for ModuleManager and ModularFlightIntegrator
 
-New in this latest version release-202:
+New in this latest version release-214:
 
-1.) Fix a regression that caused leprochan valley JNSQ and bright colors in other planet packs (caused by createColors = false not being applied).
-
-2.) Better error message if an orbit icon fails to be applied.
+1.) Hotfix for some missing .cfg files for Sterling Systems (in other words, the support announced last release was working in the "yes, but no" style.  Now it works fully.
 
 About
 -----

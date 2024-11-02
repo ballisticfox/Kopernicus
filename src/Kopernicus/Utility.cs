@@ -279,14 +279,31 @@ namespace Kopernicus
             }
         }
 
-        public static T[] GetMods<T>(PQS sphere) where T : PQSMod
+        public static PQSMod[] GetMods(PQS sphere)
         {
-            return sphere.GetComponentsInChildren<T>(true).Where(m => m.transform.parent == sphere.transform).ToArray();
+            // if the PQS has not been started, the mods array will be empty.  Do the slow thing.
+            // we COULD cache that list of mods, but I don't know if new ones may be created and missed
+            if (sphere?.mods == null)
+            {
+                // why doesn't this just iterate over the immmediate children?
+                // is it because we need to include inactive components?
+                return sphere.GetComponentsInChildren<PQSMod>(true).Where(m => m.transform.parent == sphere.transform).ToArray();
+            }
+            
+            return sphere.mods;
         }
 
         public static T GetMod<T>(PQS sphere) where T : PQSMod
         {
-            return GetMods<T>(sphere).FirstOrDefault();
+            var mods = GetMods(sphere);
+            for (int i = mods.Length; i-- > 0;)
+            {
+                if (mods[i] is T mod)
+                {
+                    return mod;
+                }
+            }
+            return null;
         }
 
         public static Boolean HasMod<T>(PQS sphere) where T : PQSMod
@@ -893,6 +910,24 @@ namespace Kopernicus
         public static Texture2D LoadTexture(String path, Boolean compress, Boolean upload, Boolean unreadable)
         {
             return OnDemandStorage.LoadTexture(path, compress, upload, unreadable);
+        }
+
+        // This function loads up some animationstates
+        public static AnimationState[] SetUpAnimation(string animationName, Part part)
+        {
+            var states = new List<AnimationState>();
+            foreach (var animation in part.FindModelAnimators(animationName))
+            {
+                var animationState = animation[animationName];
+                animationState.speed = 0;
+                animationState.enabled = true;
+                // Clamp this or else weird things happen
+                animationState.wrapMode = WrapMode.ClampForever;
+                animation.Blend(animationName);
+                states.Add(animationState);
+            }
+            // Convert 
+            return states.ToArray();
         }
 
         [SuppressMessage("ReSharper", "InconsistentNaming")]
