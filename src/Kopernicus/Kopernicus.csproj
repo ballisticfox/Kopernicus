@@ -162,6 +162,8 @@
     <Compile Include="Components\PQSLandControlFixer.cs" />
     <Compile Include="Configuration\MaterialLoader\HapkeCubeMappedLoader.cs" />
     <Compile Include="Configuration\MaterialLoader\HapkeLoader.cs" />
+    <Compile Include="Configuration\ModLoader\PQSCity2Extended.cs" />
+    <Compile Include="Configuration\ModLoader\PQSCityExtended.cs" />
     <Compile Include="RuntimeUtility\PreciseFloatingOrigin.cs" />
     <Compile Include="Components\PQSMod_VertexColorCubeMap.cs" />
     <Compile Include="Components\PQSMod_VertexHeightCubeMap.cs" />

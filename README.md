@@ -1,15 +1,16 @@
 Kopernicus
 ==============================
-August 29th, 2024
+December 14th, 2024
 * Created by: BryceSchroeder and Nathaniel R. Lewis (Teknoman117)
 * Actively maintained by: Prestja and R-T-B.
 * Formerly maintained by: Thomas P., NathanKell and KillAshley
 * Additional Content by: Democat3457, Gravitasi, aftokino, KCreator, Padishar, Kragrathea, OvenProofMars, zengei, MrHappyFace, Sigma88, Majiir (CompatibilityChecker), blackrack/LGHassen (shaders/GPL'd scatterer code)
 * Much thanks to Sarbian for ModuleManager and ModularFlightIntegrator
 
-New in this latest version release-214:
+New in this latest version release-218:
 
-1.) Hotfix for some missing .cfg files for Sterling Systems (in other words, the support announced last release was working in the "yes, but no" style.  Now it works fully.
+1.) Minor hotfix for duplicate commsites at KSC2/Inland KSC in Kerbin template.  This really has no major effect on anyone, but is a strange way to waste resources.
+
 
 About
 -----
