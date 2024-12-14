@@ -1,4 +1,4 @@
-﻿/**
+﻿﻿/**
  * Kopernicus Planetary System Modifier
  * -------------------------------------------------------------
  * This library is free software; you can redistribute it and/or
@@ -829,6 +829,7 @@ namespace Kopernicus
                     // Create the mesh
                     m = new Mesh
                     {
+                        indexFormat = count > (65536) ? UnityEngine.Rendering.IndexFormat.UInt32 : UnityEngine.Rendering.IndexFormat.UInt16,
                         vertices = vertices,
                         triangles = triangles,
                         uv = uvs,
