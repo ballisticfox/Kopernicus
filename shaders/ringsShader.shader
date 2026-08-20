@@ -5,6 +5,67 @@
 
 Shader "Kopernicus/Rings"
 {
+  // Every uniform the CPU writes is declared here as well. Setting a uniform that is not a declared
+  // property works from Material.SetFloat, but Shader.FindPropertyIndex cannot see it, so anything
+  // that validates before writing — Kopernicus' material loaders, Material.HasProperty, the material
+  // inspector — treats it as absent and silently skips it.
+  //
+  // Defaults match what RingLoader used to push from its own fields, so a ring config that leaves a
+  // key out gets what it always got. The effects that need a texture stay switched off by their own
+  // scalars (innerShadeTiles, the two detail strengths, detailRegionsMask), which is why the texture
+  // defaults below cannot turn anything on by themselves.
+  //
+  // Float, never Range: Kopernicus' MaterialLoader.SetFloat clamps Range properties to their slider
+  // limits, which would quietly cap distances measured in metres.
+  Properties
+  {
+    _MainTex("Ring Texture", 2D) = "white" {}
+    _BacklitTexture("Backlit Texture", 2D) = "white" {}
+    _Color("Color", Color) = (1, 1, 1, 1)
+
+    albedoStrength("Albedo Strength", Float) = 1
+    scatteringStrength("Scattering Strength", Float) = 1.92466
+    anisotropy("Mie Anisotropy", Float) = 0.95
+    penumbraMultiplier("Penumbra Multiplier", Float) = 10
+
+    fadeoutStartDistance("Fadeout Start Distance", Float) = 100
+    fadeoutStopDistance("Fadeout Stop Distance", Float) = 20
+    fadeoutMinAlpha("Fadeout Minimum Alpha", Float) = 0
+
+    // Inner shade. Off until innerShadeTiles is positive.
+    _InnerShadeTexture("Inner Shade Texture", 2D) = "white" {}
+    innerShadeTiles("Inner Shade Tiles", Float) = 0
+
+    // Detail noise. Off until the strengths and the regions mask are non-zero.
+    _DetailRegionsTex("Detail Regions", 2D) = "white" {}
+    detailRegionsMask("Detail Regions Mask", Vector) = (0, 0, 0, 0)
+
+    _CoarseDetailNoiseTex("Coarse Detail Noise", 2D) = "white" {}
+    coarseDetailAlphaMin("Coarse Detail Alpha Min", Vector) = (0, 0, 0, 0)
+    coarseDetailAlphaMax("Coarse Detail Alpha Max", Vector) = (1, 1, 1, 1)
+    coarseDetailStrength("Coarse Detail Strength", Float) = 0
+    coarseDetailMask("Coarse Detail Mask", Vector) = (1, 1, 1, 1)
+
+    _FineDetailNoiseTex("Fine Detail Noise", 2D) = "white" {}
+    fineDetailAlphaMin("Fine Detail Alpha Min", Vector) = (0, 0, 0, 0)
+    fineDetailAlphaMax("Fine Detail Alpha Max", Vector) = (1, 1, 1, 1)
+    fineDetailStrength("Fine Detail Strength", Float) = 0
+    fineDetailMask("Fine Detail Mask", Vector) = (1, 1, 1, 1)
+
+    // Packed by RingsDetailLoader from both passes at once — see the note by detailFade0 below.
+    [HideInInspector] detailTiling("Detail Tiling", Vector) = (1, 1, 1, 1)
+    [HideInInspector] detailFade0("Detail Fade 0", Vector) = (-10, -10, -3, -3)
+    [HideInInspector] detailFade1("Detail Fade 1", Vector) = (-8, -8, -6, -6)
+
+    // Written every frame or at build time by the Ring component; nothing config can set.
+    [HideInInspector] innerRadius("Inner Radius", Float) = 0
+    [HideInInspector] outerRadius("Outer Radius", Float) = 0
+    [HideInInspector] planetRadius("Planet Radius", Float) = 0
+    [HideInInspector] sunRadius("Sun Radius", Float) = 0
+    [HideInInspector] sunPosRelativeToPlanet("Sun Position", Vector) = (0, 0, 0, 0)
+    [HideInInspector] innerShadeOffset("Inner Shade Offset", Float) = 0
+  }
+
   SubShader
   {
     Tags
