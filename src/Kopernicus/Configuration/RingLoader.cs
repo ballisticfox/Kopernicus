@@ -301,10 +301,10 @@ namespace Kopernicus.Configuration
         [ParserTarget("Detail", AllowMerge = true)]
         public MaterialLoader.RingDetailLoader Detail
         {
-            get { return (RingMaterial as MaterialLoader.KopernicusRingsLoader)?.Detail; }
+            get { return (RingMaterial as MaterialLoader.RingsLoader)?.Detail; }
             set
             {
-                if (RingMaterial is MaterialLoader.KopernicusRingsLoader rings)
+                if (RingMaterial is MaterialLoader.RingsLoader rings)
                 {
                     rings.Detail = value;
                 }
@@ -347,7 +347,7 @@ namespace Kopernicus.Configuration
 
             String shaderName = Value.material != null && Value.material.shader != null
                 ? Value.material.shader.name
-                : MaterialLoader.KopernicusRingsLoader.SHADER_NAME;
+                : MaterialLoader.RingsLoader.SHADER_NAME;
 
             RingMaterial = MaterialLoader.MaterialLoader.Create(shaderName, Value.material);
         }
@@ -357,7 +357,7 @@ namespace Kopernicus.Configuration
         {
             if (UseNewShader)
             {
-                return MaterialLoader.KopernicusRingsLoader.SHADER_NAME;
+                return MaterialLoader.RingsLoader.SHADER_NAME;
             }
 
             return Unlit ? "Unlit/Transparent" : "Legacy Shaders/Transparent/Diffuse";
@@ -385,7 +385,7 @@ namespace Kopernicus.Configuration
         void IParserEventSubscriber.PostApply(ConfigNode node)
         {
 
-            (RingMaterial as MaterialLoader.KopernicusRingsLoader)?.ApplyDeferred();
+            (RingMaterial as MaterialLoader.RingsLoader)?.ApplyDeferred();
             Value.material = RingMaterial.Value;
             Value.materialOnDemandTextures = RingMaterial.Entries;
 

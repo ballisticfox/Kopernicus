@@ -29,14 +29,13 @@ using Kopernicus.ConfigParser.Enumerations;
 using Kopernicus.Configuration.Attributes;
 using Kopernicus.Configuration.MaterialLoader.Parsing;
 using Kopernicus.Configuration.Parsing;
-using Kopernicus.OnDemand;
 using UnityEngine;
 
 namespace Kopernicus.Configuration.MaterialLoader
 {
     [RequireConfigType(ConfigType.Node)]
     [MaterialLoader(SHADER_NAME)]
-    public class KopernicusRingsLoader : ScaledMaterialLoader
+    public class RingsLoader : ScaledMaterialLoader
     {
         public const string SHADER_NAME = "Kopernicus/Rings";
 
@@ -47,7 +46,7 @@ namespace Kopernicus.Configuration.MaterialLoader
         public override ShaderParser ShaderParser { get; set; }
 
         [ParserTarget("onDemand")]
-        public override NumericParser<bool> OnDemand { get; set; } = OnDemandStorage.UseOnDemand;
+        public override NumericParser<bool> OnDemand { get; set; } = false;
 
         // The ring itself, sampled across its width. Alpha is opacity.
         [ParserTarget("texture")]
@@ -136,9 +135,9 @@ namespace Kopernicus.Configuration.MaterialLoader
         [ParserTarget("Detail", AllowMerge = true)]
         public RingDetailLoader Detail { get; set; } = new RingDetailLoader();
 
-        public KopernicusRingsLoader() { }
+        public RingsLoader() { }
 
-        public KopernicusRingsLoader(Material material)
+        public RingsLoader(Material material)
         {
             Value = material;
             if (material != null)
