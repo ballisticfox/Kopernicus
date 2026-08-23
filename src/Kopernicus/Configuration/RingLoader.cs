@@ -183,10 +183,6 @@ namespace Kopernicus.Configuration
             set { Value.rotationPeriod = value; }
         }
 
-        // Both of these pick a shader, so both are read while building the material in Apply, which
-        // is why they are PreApply: an ordinary target is not parsed until after that has run. They
-        // do nothing once a Material node names a shader of its own.
-        //
         // Unlit our ring?
         [PreApply]
         [ParserTarget("unlit")]

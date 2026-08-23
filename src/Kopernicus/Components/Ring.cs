@@ -77,15 +77,13 @@ namespace Kopernicus.Components
         public Single longitudeOfAscendingNode;
 
         /// <summary>
-        /// The ring's material, built by RingLoader from the config. Everything a config can author
-        /// lives on it; this component writes only what it derives from the mesh and from where the
-        /// star is, which is why those are the sole properties it still names below.
+        /// The ring's material, built by RingLoader from the config.
         /// </summary>
         public Material material;
 
         /// <summary>
         /// Textures the material deferred to on-demand loading, as shader property name to texture
-        /// path. Carried here rather than wired at parse time — see BuildRing.
+        /// path.
         /// </summary>
         public Dictionary<String, String> materialOnDemandTextures;
 
@@ -117,8 +115,7 @@ namespace Kopernicus.Components
 
         /// <summary>
         /// Whether the material takes the lighting terms Update refreshes. Resolved from the shader
-        /// once the material is known, rather than from a config flag, so a ring gets them exactly
-        /// when its shader declares them.
+        /// once the material is known.
         /// </summary>
         private Boolean _hasRuntimeLighting;
 
@@ -247,8 +244,6 @@ namespace Kopernicus.Components
                     .ToList();
             }
 
-            // Everything below is measured from the ring that was just built, or from the body it
-            // is around, so none of it could have come from the config that made the material.
             material.SetFloat(InnerRadius, innerRadius * localScale.x);
             material.SetFloat(OuterRadius, outerRadius * localScale.x);
             material.SetFloat(PlanetRadius, planetRadius * radiusMultiplier);
